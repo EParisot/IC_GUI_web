@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Snaps{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_snaps.css' %}" />
+
+<div id="h_actions">
+	<button onclick="start_cam()"><img src="{% static 'img/webcam.png' %}" alt="Start"></button>
+	<button id="stop_btn" onclick="stop_cam()" disabled><img src="{% static 'img/stop.png' %}" alt="Stop"></button>
+</div>
+
+<div id="content_div">
+	<div>
+		<div id="video_div">
+			<video autoplay="true" id="videoElement"></video>
+		</div>
+	</div>
+	
+	<div id="v_actions">
+		<button id ="snap_btn" onclick="snap()" disabled><img src="{% static 'img/snap.png' %}" alt="Snap"></button>
+		<button onclick="del()"><img src="{% static 'img/del.png' %}" alt="Del"></button>
+		<button onclick="save()"><img src="{% static 'img/save.png' %}" alt="Save"></button>
+	</div>
+	
+	<div id="snaps"></div>
+</div>
+
+<script type="text/javascript" src="http://stuk.github.io/jszip/dist/jszip.min.js"></script>
+<script type="text/javascript" src="http://stuk.github.io/jszip/vendor/FileSaver.js"></script>
+<script>
+	var video = document.querySelector("#videoElement");
+	
+	var H = window.screen.height / 2; //screen height
+	if (window.screen.width < 768)
+	{
+		var W = window.screen.width;
+	}
+	else
+	{
+		var W = window.screen.width / 2; //screen width
+	}
+	
+	document.getElementById("video_div").style.width = W.toString()+'px';
+	document.getElementById("video_div").style.height = H.toString()+'px';
+	document.getElementById("snaps").style.height = H.toString()+'px';
+	
+	function start_cam()
+	{
+		if (navigator.mediaDevices.getUserMedia) 
+		{
+			navigator.mediaDevices.getUserMedia({video: { width: W, height: H }})
+			.then(function(stream)
+			{
+    			video.srcObject = stream;
+			})
+ 			.catch(function(err0r) {console.log("Something went wrong!");});
+			document.getElementById("stop_btn").disabled=false;
+			document.getElementById("snap_btn").disabled=false;
+		}
+	}
+
+	function stop_cam()
+	{
+		video.pause();
+		video.srcObject = null;
+		document.getElementById("stop_btn").disabled=true;
+		document.getElementById("snap_btn").disabled=true;
+	}
+
+	var count = 0;
+
+	function snap() 
+	{
+		var canvas = document.createElement('canvas');
+		count += 1;
+		canvas.id = "x" + count.toString();
+		canvas.width = 120 * (W/H);
+		canvas.height = 120;
+		canvas.style.margin = "5px 5px 5px 5px";
+		canvas.selected = false;
+		canvas.addEventListener('click', function(event)
+										{
+											if (canvas.selected==false)
+											{
+												canvas.style.outline="4px solid black";
+												canvas.selected=true;
+											}
+											else
+											{
+												canvas.style.outline="";
+												canvas.selected=false;
+											}
+										}
+								)
+		
+		var ctx = canvas.getContext('2d');
+        	ctx.drawImage(video,0,0,canvas.width,canvas.height);
+		
+		var canvas_div = document.getElementById("snaps");
+		canvas_div.appendChild(canvas);
+		canvas_div.scrollTop = canvas_div.scrollHeight;
+	}
+	
+	function dataURItoBlob(dataURI) {
+		// convert base64 to raw binary data held in a string
+		// doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+		var byteString = atob(dataURI.split(',')[1]);
+		// separate out the mime component
+		var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+		// write the bytes of the string to an ArrayBuffer
+		var ab = new ArrayBuffer(byteString.length);
+		// create a view into the buffer
+		var ia = new Uint8Array(ab);
+		// set the bytes of the buffer to the correct values
+		for (var i = 0; i < byteString.length; i++) {
+			ia[i] = byteString.charCodeAt(i);
+		}
+		// write the ArrayBuffer to a blob, and you're done
+		var blob = new Blob([ab], {type: mimeString});
+		return blob;
+	}
+	
+	function save() 
+	{
+		var canvas_list = document.querySelectorAll('canvas'), i;
+		
+		if (canvas_list.length > 0)
+		{
+			var zip = new JSZip();
+
+			for (i = 0; i < canvas_list.length; ++i)
+			{
+				var image_name = "pic" + i.toString() + ".png";
+				var image_data = canvas_list[i].toDataURL("image/png");
+				zip.file(image_name, dataURItoBlob(image_data), {base64: true});
+			}
+			zip.generateAsync({type:"blob"})
+			.then(function(content) {
+			// see download.js
+			saveAs(content, "snapshots.zip");
+			});
+		}
+	}
+	
+	function del() 
+	{
+		var canvas_list = document.querySelectorAll('canvas');
+		var sel = false;
+		
+		for (i = 0; i < canvas_list.length; ++i) 
+		{
+			if (canvas_list[i].selected==true)
+			{
+				sel = true;
+			}
+		}
+		
+		if (sel == true)
+		{
+			for (i = 0; i < canvas_list.length; ++i) 
+			{
+				if (canvas_list[i].selected==true)
+				{
+					var element = document.getElementById(canvas_list[i].id);
+					element.parentNode.removeChild(element);
+				}
+			}
+		}
+		else
+		{
+			for (i = 0; i < canvas_list.length; ++i) 
+			{
+				var element = document.getElementById(canvas_list[i].id);
+				element.parentNode.removeChild(element);
+			}
+		}
+	}
+	
+	function closeIt()
+	{
+		var canvas_list = document.querySelectorAll('canvas');
+		if (canvas_list.length > 0)
+		{
+			return "Any string value here forces a dialog box to \n" + 
+			"appear before closing the window.";
+		}
+		else
+		{
+			return
+		}
+	}
+	window.onbeforeunload = closeIt;
+
+</script>
+
+{% endblock %}

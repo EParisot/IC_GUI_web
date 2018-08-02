@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div id="top">
+<h1>Profile : {{ user.username }}</h1>
+</div>
+{% if user == current_user %}
+<div id="content_div">
+<div>
+<div id="actions">
+		<form action="{% url 'edit_profile' user.username %}">
+			<input type="image" src="/static/img/edit.png" id="edit"/>
+		</form>
+</div>
+<div id="center">
+<p class="infos">Username : <b>{{ user.username }}</b></p>
+<p class="infos">First Name : {{ user.first_name }}</p>
+<p class="infos">Last Name : {{ user.last_name }}</p>
+<p class="infos_edit">Email : <b>{{ user.email }}</b></p>
+<br><br>
+<p class="infos">Q-Points : {{ level }}</p>
+<p class="infos">Level : {% if level < 30 %} <b>Q-roockie</b>
+					{% elif level < 60 %} <b>Casual waiter</b>
+					{% elif level < 120 %} <b>Q-Expert</b>
+					{% elif level > 120 %} <b>Q-Master</b>
+					{% endif %}</p>
+<br>
+</div>
+</div>
+<div id="table">
+<h2>Contributions :</h2>
+{% render_table table %}
+<br><br>
+<br><br>
+</div>
+</div>
+{% else %}
+<p>You are not allowed to acces to this profile, please login or register...</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+
+{% block title %}Labels{% endblock %}
+
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_labels.css' %}" />
+
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
+
+{# JQUERY FILE UPLOAD SCRIPTS #}
+<script src="{% static 'scripts/jquery.ui.widget.js' %}"></script>
+<script src="{% static 'scripts/jquery.iframe-transport.js' %}"></script>
+<script src="{% static 'scripts/jquery.fileupload.js' %}"></script>
+<script src="{% static 'scripts/jszip-utils.min.js' %}"></script>
+
+{# PHOTOS PAGE SCRIPTS #}
+<script src="{% static 'scripts/upload.js' %}"></script>
+<script type="text/javascript" src="http://stuk.github.io/jszip/dist/jszip.min.js"></script>
+<script type="text/javascript" src="http://stuk.github.io/jszip/vendor/FileSaver.js"></script>
+
+
+{# BUTTON TO TRIGGER THE ACTION #}
+<button type="button" class="btn btn-primary js-upload-photos" style="margin: 10px 10px 10px 10px;">
+	<span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
+</button>
+
+<!--{# DISPLAY THE UPLOAD PROGRESS #}
+<div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+	<div class="modal-content">
+	  <div class="modal-header">
+		<h4 class="modal-title">Uploading...</h4>
+	  </div>
+	  <div class="modal-body">
+		<div class="progress">
+		  <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>-->
+
+<div id="content_div">	
+	<div id="gallery">
+		{# FILE INPUT TO BE USED BY THE PLUG-IN #}
+		<input id="fileupload" type="file" name="file" multiple
+			   style="display: none;"
+			   data-url="{% url 'labels' %}"
+			   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+
+		{# DISPLAY THE UPLOADED PHOTOS #}
+			{% for photo in photos %}
+				{% if photo.file.name == sel %}
+					<a style="outline: 4px solid black;" onclick="show_pic('{{ photo.file.url }}', '{{ photo.file.name }}');"><img src={{ photo.file.url }} alt={{ photo.file.name }} width="160" height="120"></a></td>
+				{% else %}
+					<a onclick="show_pic('{{ photo.file.url }}', '{{ photo.file.name }}');"><img src={{ photo.file.url }} alt={{ photo.file.name }} width="160" height="120"></a></td>
+				{% endif %}
+			{% endfor %}
+	</div>	
+	<div id="pic_div"></div>
+</div>
+<div id="h_actions">
+	<button onclick="del()"><img src="{% static 'img/del.png' %}" alt="Del"></button>
+	<button onclick="save()"><img src="{% static 'img/save.png' %}" alt="Save"></button>
+</div>
+
+<script>
+
+	var H = window.screen.height / 2; //screen height
+	if (window.screen.width < 768)
+	{
+		var W = window.screen.width;
+	}
+	else
+	{
+		var W = window.screen.width / 2; //screen width
+	}
+
+	document.getElementById("pic_div").style.width = W.toString()+'px';
+	document.getElementById("pic_div").style.height = H.toString()+'px';
+	
+	document.getElementById("gallery").style.width = W.toString()+'px';
+	document.getElementById("gallery").style.height = H.toString()+'px';
+	
+	var a_list = document.getElementById('gallery').querySelectorAll('a'), i;
+	for (i = 0; i < a_list.length; ++i)
+	{
+		(function() 
+		{
+			var a = a_list[i];
+			if (a.style.outline == "")
+			{
+				a.selected = false;
+			}
+			else
+			{
+				show_pic(a.firstChild.src, a.firstChild.alt);
+			}
+			a.style.margin = "5px 5px 5px 5px";
+			a.addEventListener('click', function(event)
+									{											
+												if (a.selected==false)
+												{
+													var img_list = document.getElementById('gallery').querySelectorAll('a'), j;
+													for (j = 0; j < img_list.length; ++j)
+													{
+														img_list[j].selected = false;
+														img_list[j].style.outline="";
+													}
+													a.style.outline="4px solid black";
+													a.selected=true;
+												}
+												else
+												{
+													a.style.outline="";
+													a.selected=false;
+													document.getElementById('pic_div').innerHTML = "";
+												}
+												
+											}
+									)
+		}());
+	}
+	
+	function show_pic(url, alt)
+	{
+		var img = document.createElement("IMG");
+		img.src = url;
+		img.alt = url;
+		img.height = H;
+		img.width = W;
+		if (document.getElementById('pic_div').childElementCount!=0)
+		{
+			document.getElementById('pic_div').innerHTML = "";
+		}
+		document.getElementById('pic_div').appendChild(img);
+		var label = document.createElement("p");
+		label.id = "pic_p";
+		label.innerHTML = alt;
+		document.getElementById('pic_div').appendChild(label);
+	}
+	
+	window.addEventListener('keydown',this.keyHandler,false);
+	function keyHandler(e) {
+		var j = 0;
+		var img_list = document.getElementById('gallery').querySelectorAll('a');
+		while (img_list[j] && img_list[j].selected == false)
+		{
+			j++;
+		}
+		if (e.key == "ArrowLeft" || e.key == "ArrowRight")
+		{
+			if (j < img_list.length && img_list.length > 0)
+			{
+				img_list[j].style.outline="";
+				img_list[j].selected=false;
+				if (e.key == "ArrowRight" && img_list[j + 1])
+				{
+					img_list[j + 1].style.outline="4px solid black";
+					img_list[j + 1].selected=true;
+					show_pic(img_list[j + 1].firstChild.src, img_list[j + 1].firstChild.alt);
+				}
+				else if (e.key == "ArrowLeft" && img_list[j - 1])
+				{
+					img_list[j - 1].style.outline="4px solid black";
+					img_list[j - 1].selected=true;
+					show_pic(img_list[j - 1].firstChild.src, img_list[j - 1].firstChild.alt);
+				}
+			}
+			else if (j == img_list.length && img_list.length > 0)
+			{
+				if (e.key == "ArrowRight" && img_list[0])
+				{
+					img_list[0].style.outline="4px solid black";
+					img_list[0].selected=true;
+					show_pic(img_list[0].firstChild.src, img_list[0].firstChild.alt);
+				}
+				else if (e.key == "ArrowLeft" && img_list[j - 1])
+				{
+					img_list[j - 1].style.outline="4px solid black";
+					img_list[j - 1].selected=true;
+					show_pic(img_list[j - 1].firstChild.src, img_list[j - 1].firstChild.alt);
+				}
+			}
+		}
+		else if (document.getElementById("pic_div").childElementCount!=0)
+		{
+			if (document.getElementById('pic_div').childElementCount!=0 && (isAlpha(e.key) || isNum(e.key)))
+			{
+				rename(e.key, img_list[j].firstChild.alt);
+			}
+		}
+	}
+	
+	function isAlpha(ch)
+	{
+		return /^[A-Z]$/i.test(ch);
+	}
+	
+	function isNum(ch)
+	{
+		if (!isNaN(parseInt(ch, 10)))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function rename(label, old)
+	{
+		var url = '/labels/rename/' + old + '/' + label;
+		post_to_url(url);
+		
+		var j = 0;
+		var img_list = document.getElementById('gallery').querySelectorAll('a'), j;
+		while (img_list[j] && img_list[j].firstChild.alt != old)
+		{
+			j++;
+		}
+		if (j < img_list.length)
+		{
+			img_list[j].style.outline="4px solid black";
+			img_list[j].selected=true;
+		}
+	}
+	
+	function del() 
+	{
+		var img_list = document.getElementById('gallery').querySelectorAll('a');
+		var sel = false;
+		var i;
+		
+		for (i = 0; i < img_list.length; ++i) 
+		{
+			if (img_list[i].selected==true)
+			{
+				sel = true;
+			}
+		}
+		
+		if (sel == true)
+		{
+			for (i = 0; i < img_list.length; ++i) 
+			{
+				if (img_list[i].selected==true)
+				{
+					img_list[i].parentNode.removeChild(img_list[i]);
+					document.getElementById('pic_div').innerHTML = "";
+					post_to_url('/labels/delete/' + img_list[i].firstChild.alt)
+					
+
+				}
+			}
+		}
+		else
+		{
+			for (i = 0; i < img_list.length; ++i) 
+			{
+				img_list[i].parentNode.removeChild(img_list[i]);
+				document.getElementById('pic_div').innerHTML = "";
+			}
+			post_to_url('/labels/delete_all')
+		}
+	}
+	
+	function post_to_url(url) 
+	{
+		method = 'POST';
+
+		var form = document.createElement('form');
+
+		form.setAttribute('method', method);
+		form.setAttribute('action', url);
+		
+		var input = document.createElement('input');
+		input.type = 'hidden';
+		input.name = 'csrfmiddlewaretoken'
+		input.value = "{{ csrf_token }}";
+
+		form.appendChild(input);
+		document.body.appendChild(form);
+		form.submit('/labels/');
+	}
+	
+	function urlToPromise(url) {
+	return new Promise(function(resolve, reject) {
+		JSZipUtils.getBinaryContent(url, function (err, data) {
+			if(err) {
+				reject(err);
+			} else {
+				resolve(data);
+			}
+		});
+	});
+	}
+	
+	function save() 
+	{
+		var i = 0;
+		var img_list = document.getElementById('gallery').querySelectorAll('img');
+		
+		if (img_list.length > 0)
+		{
+			var zip = new JSZip();
+			for (i = 0; i < img_list.length; ++i)
+			{
+				var image_name = img_list[i].alt;
+				zip.file(image_name, urlToPromise(img_list[i].src), {binary:true});
+			}
+			zip.generateAsync({type:"blob"})
+			.then(function(content) {
+			// see download.js
+			saveAs(content, "dataset.zip");
+			});
+		}
+	}
+	
+</script>
+
+{% endblock %}

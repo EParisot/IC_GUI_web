@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}My Queues{% endblock %}
+{% block content %}
+<div id="top">
+<h1>{{ user.username }}'s Queues :</h1>
+{% if user == queue.author %}
+	<div id="actions">
+		<form action="{% url 'edit' queue.name %}">
+			<button type="submit" >Edit</button>
+		</form>
+		<form action="{% url 'remove' queue.name %}" method="post">
+		{% csrf_token %}
+			<button type="submit" onclick="return confirm('Are you sure you want to delete this?')">Remove</button>
+		</form>
+	</div>
+{% endif %}
+</div>
+<div id="content_div">
+<div id="ul_div">
+	<!-- class="search" automagically makes an input a search field. -->
+	<input class="search" placeholder="Search" />
+	<br>
+	<!-- class="sort" automagically makes an element a sort buttons. The date-sort value decides what to sort by. -->
+	&nbsp;&nbsp;&nbsp;&nbsp;Sort by :
+	<button class="sort" data-sort="name">
+    Name
+	</button>
+	<button class="sort" data-sort="infos1">
+    Active
+	</button>
+	<button class="sort" data-sort="infos0">
+    Average Wait
+	</button>
+	<button class="sort" data-sort="infos2">
+    Wait
+	</button>
+	<button class="sort" data-sort="infos3">
+    Contributors
+	</button>
+	<button class="sort" data-sort="infos4">
+    Queued
+	</button>
+	<!-- Child elements of container with class="list" becomes list items -->
+	<ul class="list">
+			{% for queue in queues_list %}
+			<li>
+				<h3 class="name"><a id={{ queue.id }} href="{% url 'open' queue.name %}">{{ queue.name }} :</a></h3>
+				<div class="infos_content">
+				<div>
+				<p class="infos0"> Average Wait Time : {{ queue.avg_wait }}</p>
+				<p class="infos2"> Last Wait Time : {{ queue.wait }}</p>
+				<p class="infos3"> Contributors : {{ queue.edit_count }}</p>
+				<p class="infos4"> Queued : {{ queue.queued }}</p>
+				</div>
+				<div class="queues_infos">
+				<p> {% if queue.is_official %}<img src="/static/img/certified.jpg" alt="official">{% else %}{% endif %}</p>
+				<p> {% if queue.get_voucher %}<img src="/static/img/Gift.png" alt="voucher">{% else %}{% endif %}</p>
+				<p class="infos1"> {% if queue.active %}<img src="/static/img/Free-Switch-On.png" alt="active">{% else %}<img src="/static/img/Free-Switch-Off.png" alt="inactive">{% endif %}</p>
+				</div>
+				</div>
+			<br>
+			</li>
+			{% endfor %}
+	</ul>
+	{% load static %}
+	<script src="{% static 'js/list.js' %}"></script>
+	<script>
+	var options = {
+    valueNames: [ 'name', 'infos0', 'infos1', 'infos2', 'infos3', 'infos4' ]
+};
+	var queuesList = new List('ul_div', options);
+	</script>
+</div>
+	<div id="map-canvas"></div>
+</div>
+ <script src="https://maps.googleapis.com/maps/api/js?v=3&key={{ key }}"></script>
+ <script>
+    function initialize() {
+        var map = new google.maps.Map(document.getElementById('map-canvas'));
+        var bounds = new google.maps.LatLngBounds();
+
+		function addMarker(icon, lat, lng, title, Id, avg_wait, wait, contributors, queued) {
+            var position = new google.maps.LatLng(lat, lng);
+            var marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: title,
+				icon: icon
+            });
+			marker['infowindow']  = new google.maps.InfoWindow({
+            content: "<h1>"+title+'</h1><br>Average Wait : '+avg_wait+'  --  Last Wait time : '+wait+"<br><br>Contributors : "+contributors+"  --  Queued : "+queued+"<br>",
+			});
+			
+            google.maps.event.addListener(marker, 'click', function() {
+                window.location.href = title ;
+            });
+			
+			google.maps.event.addListener(marker, 'mouseover', function() {
+				 this['infowindow'].open(map, this);
+            });
+			
+			document.getElementById(Id).addEventListener("mouseover", function() {
+				 marker['infowindow'].open(map, marker);
+            });
+			
+			google.maps.event.addListener(marker, 'mouseout', function() {
+                 this['infowindow'].close(map, this);
+            });
+			
+			document.getElementById(Id).addEventListener("mouseout", function() {
+				 marker['infowindow'].close(map, marker);
+            });
+			
+            bounds.extend(position);
+        }
+		
+        {% for queue in queues_list %}
+
+		{% if queue.active %}
+			icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Q|ADDE63"
+		{% else %}
+			icon = "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=Q|FF0000"
+		{% endif %}
+				
+		addMarker(icon,{{ queue.position.latitude }}, {{ queue.position.longitude }}, "{{ queue.name }}", "{{ queue.id }}", "{{ queue.avg_wait }}", "{{ queue.wait }}", "{{ queue.edit_count }}", "{{ queue.queued }}");		
+			
+		{% endfor %}
+        
+		map.fitBounds(bounds);
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+{% endblock %}

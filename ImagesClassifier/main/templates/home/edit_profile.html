@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div id="top">
+<h1>Edit my profile :</h1>
+</div>
+	{% if form %}
+	<form action="{% url 'edit_profile' user %}" method="post">
+		{% csrf_token %}
+		<div id="center">
+		{{ form.as_p }}
+		<input type="image" src="/static/img/save.jpg" id="submit" />
+		</div>
+	</form>
+	<br>
+	<form id="center" action="{% url 'remove_profile' user %}">
+			<input type="image" src="/static/img/delete.png" id="delete" onclick="return confirm('Are you sure you want to delete your profile ?')"/>
+	</form>
+	{% else %}
+	<p>You are not allowed to edit this profile, please login or register...</p>
+	{% endif %}
+{% endblock %}
