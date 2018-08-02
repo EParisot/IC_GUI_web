@@ -2,7 +2,7 @@
 Images Classifier GUI web
 
 ## Architecture:
-
+```
 - Project
       - Apps
           - static
@@ -15,6 +15,7 @@ Images Classifier GUI web
       - media
           - user
               - files
+```
 
 ## Installation:
 
