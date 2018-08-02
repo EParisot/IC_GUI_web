@@ -7,16 +7,14 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/style_labels.css' %}" />
 
-<script src="{% static 'scripts/jquery.min.js' %}"></script>
-
 {# JQUERY FILE UPLOAD SCRIPTS #}
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
 <script src="{% static 'scripts/jquery.ui.widget.js' %}"></script>
 <script src="{% static 'scripts/jquery.iframe-transport.js' %}"></script>
 <script src="{% static 'scripts/jquery.fileupload.js' %}"></script>
 <script src="{% static 'scripts/jszip-utils.min.js' %}"></script>
-
-{# PHOTOS PAGE SCRIPTS #}
 <script src="{% static 'scripts/upload.js' %}"></script>
+{# PHOTOS PAGE SCRIPTS #}
 <script type="text/javascript" src="http://stuk.github.io/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="http://stuk.github.io/jszip/vendor/FileSaver.js"></script>
 
@@ -68,23 +66,21 @@
 </div>
 
 <script>
-
-	var H = window.screen.height / 2; //screen height
+	//Set Sizes
+	var H = window.screen.height / 2;
 	if (window.screen.width < 768)
 	{
 		var W = window.screen.width;
 	}
 	else
 	{
-		var W = window.screen.width / 2; //screen width
+		var W = window.screen.width / 2;
 	}
-
 	document.getElementById("pic_div").style.width = W.toString()+'px';
 	document.getElementById("pic_div").style.height = H.toString()+'px';
-	
 	document.getElementById("gallery").style.width = W.toString()+'px';
 	document.getElementById("gallery").style.height = H.toString()+'px';
-	
+	//set Selection event
 	var a_list = document.getElementById('gallery').querySelectorAll('a'), i;
 	for (i = 0; i < a_list.length; ++i)
 	{
