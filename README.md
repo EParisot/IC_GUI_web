@@ -3,18 +3,18 @@ Images Classifier GUI web
 
 ## Architecture:
 
-Project
-      Apps
-          -static
+- Project
+      - Apps
+          - static
                 css
                 img
                 scripts
-          -templates
+          - templates
                 html
-          -python views, urls, models, ...
-      media
-          user
-              files
+          - python views, urls, models, ...
+      - media
+          - user
+              - files
 
 ## Installation:
 
