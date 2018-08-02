@@ -31,12 +31,16 @@ Install all dependencies listed in requirements.txt (pip install <package_name>)
 Then :
 ```
 cd ImagesClassifier
+```
 
 //create / update database
+```
 python manage.py makemigrations
 python manage.py migrate
+```
 
 //run project
+```
 python manage.py runserver
 ```
 
