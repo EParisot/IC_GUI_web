@@ -1,9 +1,9 @@
 {% autoescape off %}
-Q-ed account activation :
+IC_GUI account activation :
 
 Hi {{ user.username }},
 
-Please click on the link below to confirm your Q-ed registration:
+Please click on the link below to confirm your IC_GUI registration:
 
 http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
 {% endautoescape %}

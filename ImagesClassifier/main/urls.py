@@ -2,6 +2,7 @@
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.conf.urls import include
 from django.conf.urls import url
+from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -11,7 +12,7 @@ urlpatterns = [
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^api/signup/$', views.api_signup, name='api_signup'),
     url(r'^account_activation_sent/$', views.account_activation_sent, name='account_activation_sent'),
-    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.activate, name='activate'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     url(r'^login/$', views.log_in, name='login'),
     url(r'^logout/$', views.log_out, name='logout'),

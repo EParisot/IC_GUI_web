@@ -49,7 +49,7 @@ def signup(request):
             message = render_to_string('home/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                 'token': account_activation_token.make_token(user),
             })
             user.email_user(subject, message)
@@ -71,7 +71,7 @@ def api_signup(request, format=None):
             message = render_to_string('home/account_activation_email.html', {
                 'user': user,
                 'domain': 'IC_GUI Account Validation',
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                 'token': account_activation_token.make_token(user),
             })
             user.email_user(subject, message)
@@ -83,11 +83,11 @@ def account_activation_sent(request):
     return render(request, 'home/account_activation_sent.html')
 
 def activate(request, uidb64, token):
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
+    #try:
+    uid = urlsafe_base64_decode(uidb64).decode()
+    user = User.objects.get(pk=uid)
+    #except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+    #    user = None
 
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
