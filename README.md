@@ -10,11 +10,12 @@ Images Classifier GUI web
                 img
                 scripts
           - templates
-                html
+                html (base.html in main app, contents in other apps)
           - python views, urls, models, ...
       - media
           - user
               - files
+
 ```
 
 ## Installation:
