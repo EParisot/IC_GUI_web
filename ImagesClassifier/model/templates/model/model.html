@@ -16,15 +16,15 @@
 			
 		</div>
 		<div id="layers_div">
-			<img id="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="in_set(event)">
-			<img id="dense" src="{% static 'img/dense.png' %}" draggable="true" ondragstart="drag(event)" onclick="dense_set(event)">
-			<img id="conv2d" src="{% static 'img/conv2d.png' %}" draggable="true" ondragstart="drag(event)" onclick="conv2d_set(event)">
-			<img id="flatten" src="{% static 'img/flatten.png' %}" draggable="true" ondragstart="drag(event)">
-			<img id="max_pool" src="{% static 'img/max_pool.png' %}" draggable="true" ondragstart="drag(event)" onclick="max_pool_set(event)">
-			<img id="dropout" src="{% static 'img/dropout.png' %}" draggable="true" ondragstart="drag(event)" onclick="dropout_set(event)">
-			<img id="sig" src="{% static 'img/sig_activation.png' %}" draggable="true" ondragstart="drag(event)">
-			<img id="softmax" src="{% static 'img/softmax_activation.png' %}" draggable="true" ondragstart="drag(event)">
-			<img id="relu" src="{% static 'img/relu_activation.png' %}" draggable="true" ondragstart="drag(event)">
+			<img id="in" class="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
+			<img id="dense" class="dense" src="{% static 'img/dense.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
+			<img id="conv2d" class="conv2d" src="{% static 'img/conv2d.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
+			<img id="flatten" class="flatten" src="{% static 'img/flatten.png' %}" draggable="true" ondragstart="drag(event)">
+			<img id="max_pool" class="max_pool" src="{% static 'img/max_pool.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
+			<img id="dropout" class="dropout" src="{% static 'img/dropout.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
+			<img id="sig" class="sig" src="{% static 'img/sig_activation.png' %}" draggable="true" ondragstart="drag(event)">
+			<img id="softmax" class="softmax" src="{% static 'img/softmax_activation.png' %}" draggable="true" ondragstart="drag(event)">
+			<img id="relu" class="relu" src="{% static 'img/relu_activation.png' %}" draggable="true" ondragstart="drag(event)">
 		</div>
 		<div id="trash_div">
 			<img id="trash" src="{% static 'img/trash.png' %}" ondrop="trash(event)" ondragover="allowDrop(event)">
@@ -54,26 +54,11 @@ function drag(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data).cloneNode(true));
-	if (data == "in")
+	var elem = document.getElementById(data).cloneNode(true);
+    ev.target.appendChild(elem);
+	if (ev.target.id == "model_div" && (elem.id == "in" || elem.id == "dense" || elem.id == "conv2d" || elem.id == "dropout" || elem.id == "max_pool"))
 	{
-		in_set(ev);
-	}
-	else if (data == "dense")
-	{
-		dense_set(ev);
-	}
-	else if (data == "conv2d")
-	{
-		conv2d_set(ev);
-	}
-	else if (data == "dropout")
-	{
-		dropout_set(ev);
-	}
-	else if (data == "max_pool")
-	{
-		max_pool_set(ev);
+		set_layer(ev, elem.id);
 	}
 }
 
@@ -83,55 +68,82 @@ function trash(ev) {
 	var elem = document.getElementById(data);
 	if (elem.parentNode == document.getElementById("model_div"))
 	{
-		elem.parentNode.removeChild(elem); 
+		elem.parentNode.removeChild(elem);
 	}
 }
 
-function in_set(ev)
+function set_layer(ev, _class)
 {
 	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
 	{
-		newWindow = window.open("in_layer", "In Layer settings", "height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
+		newWindow = window.open("set_layer", "", "height=300,width=400,status=yes,toolbar=no,menubar=no,location=no");
+		
+		var layer_id;
+		if (ev.target.id == "model_div")
+		{
+			var count = document.getElementById('model_div').children.length - 1;
+			var layer = document.querySelector("#model_div #" + _class)
+			layer.id = _class + '_' + count.toString();
+			layer_id = layer.id;
+		}
+		else
+		{
+			layer_id = ev.target.id;
+		}
 
+		if (_class == "in")
+		{
+			var layer = document.getElementById(layer_id);
+			newWindow.document.write("<form><p>width dimension :</p><input type='text' id='dim_1' value='" + layer.getAttribute("dim_1") + "'></input><p>height dimension :</p><input type='text' id='dim_2'value='" + layer.getAttribute("dim_2") + "'></input><p>channels dimension :</p><input type='text' id='dim_3'value='" + layer.getAttribute("dim_3") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			var script = newWindow.document.createElement("script");
+			script.innerHTML = "function save_layer(ev){window.close();}";
+			newWindow.document.body.appendChild(script);
+			newWindow.onunload = function(){
+										var layer = document.getElementById(layer_id);
+										
+										var att = document.createAttribute("dim_1");
+										att.value = newWindow.document.getElementById('dim_1').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("dim_2");
+										att.value = newWindow.document.getElementById('dim_2').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("dim_3");
+										att.value = newWindow.document.getElementById('dim_3').value;
+										layer.setAttributeNode(att);
+									};
+		}
+		else if (_class == "dense")
+		{
+			var layer = document.getElementById(layer_id);
+			newWindow.document.write("<form><p>neurons :</p><input type='text' id='neurons' value='" + layer.getAttribute("neurons") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			var script = newWindow.document.createElement("script");
+			script.innerHTML = "function save_layer(ev){window.close();}";
+			newWindow.document.body.appendChild(script);
+			newWindow.onunload = function(){
+										var layer = document.getElementById(layer_id);
+										
+										var att = document.createAttribute("neurons");
+										att.value = newWindow.document.getElementById('neurons').value;
+										layer.setAttributeNode(att);
+									};
+		}
+		else if (_class == "conv2d")
+		{
+			
+		}
+		else if (_class == "dropout")
+		{
+		
+		}
+		else if (_class == "max_pool")
+		{
+		
+		}
 	}
+
 }
-
-function conv2d_set(ev)
-{
-	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
-	{
-		newWindow = window.open("conv2d_layer", "Conv2d Layer settings", "height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
-
-	}
-}
-
-function dense_set(ev)
-{
-	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
-	{
-		newWindow = window.open("dense_layer", "Dense Layer settings", "height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
-
-	}
-}
-
-function max_pool_set(ev)
-{
-	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
-	{
-		newWindow = window.open("max_pool_layer", "MaxPooling Layer settings", "height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
-
-	}
-}
-
-function dropout_set(ev)
-{
-	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
-	{
-		newWindow = window.open("dropout_layer", " Layer settings", "height=200,width=400,status=yes,toolbar=no,menubar=no,location=no");
-
-	}
-}
-
 </script>
 
 {% endblock %}
