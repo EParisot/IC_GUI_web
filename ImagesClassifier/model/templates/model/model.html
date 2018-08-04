@@ -76,7 +76,7 @@ function set_layer(ev, _class)
 {
 	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
 	{
-		newWindow = window.open("set_layer", "", "height=300,width=400,status=yes,toolbar=no,menubar=no,location=no");
+		newWindow = window.open("set_layer", "", "height=400,width=400,status=yes,toolbar=no,menubar=no,location=no");
 		
 		var layer_id;
 		if (ev.target.id == "model_div")
@@ -131,15 +131,98 @@ function set_layer(ev, _class)
 		}
 		else if (_class == "conv2d")
 		{
-			
+			var layer = document.getElementById(layer_id);
+			newWindow.document.write("<form><p>filters:</p><input type='text' id='filters' value='" + layer.getAttribute("filters") + "'></input><div style='display:flex;justify-content:space-between;'><div><p>kernel w:</p><input type='text' id='kernel_w' value='" + layer.getAttribute("kernel_w") + "'></input></div><div><p>kernel h:</p><input type='text' id='kernel_h' value='" + layer.getAttribute("kernel_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			var script = newWindow.document.createElement("script");
+			script.innerHTML = "function save_layer(ev){window.close();}";
+			newWindow.document.body.appendChild(script);
+			newWindow.onunload = function(){
+										var layer = document.getElementById(layer_id);
+
+										var att = document.createAttribute("filters");
+										att.value = newWindow.document.getElementById('filters').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("kernel_w");
+										att.value = newWindow.document.getElementById('kernel_w').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("kernel_h");
+										att.value = newWindow.document.getElementById('kernel_h').value;
+										layer.setAttributeNode(att);
+		
+										att = document.createAttribute("stride_x");
+										att.value = newWindow.document.getElementById('stride_x').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("stride_y");
+										att.value = newWindow.document.getElementById('stride_y').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("padding");
+										if (newWindow.document.getElementById('padding').checked == true)
+										{
+											att.value = 'checked';
+										}
+										else
+										{
+											att.value = '';
+										}
+										layer.setAttributeNode(att);
+									};	
 		}
 		else if (_class == "dropout")
 		{
-		
+			var layer = document.getElementById(layer_id);
+			newWindow.document.write("<form><p>ratio :</p><input type='text' id='ratio' value='" + layer.getAttribute("ratio") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			var script = newWindow.document.createElement("script");
+			script.innerHTML = "function save_layer(ev){window.close();}";
+			newWindow.document.body.appendChild(script);
+			newWindow.onunload = function(){
+										var layer = document.getElementById(layer_id);
+										
+										var att = document.createAttribute("ratio");
+										att.value = newWindow.document.getElementById('ratio').value;
+										layer.setAttributeNode(att);
+									};
 		}
 		else if (_class == "max_pool")
 		{
+			var layer = document.getElementById(layer_id);
+			newWindow.document.write("<form><div style='display:flex;justify-content:space-between;'><div><p>pool w:</p><input type='text' id='pool_w' value='" + layer.getAttribute("pool_w") + "'></input></div><div><p>pool h:</p><input type='text' id='pool_h' value='" + layer.getAttribute("pool_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			var script = newWindow.document.createElement("script");
+			script.innerHTML = "function save_layer(ev){window.close();}";
+			newWindow.document.body.appendChild(script);
+			newWindow.onunload = function(){
+										var layer = document.getElementById(layer_id);
+									
+										var att = document.createAttribute("pool_w");
+										att.value = newWindow.document.getElementById('pool_w').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("pool_h");
+										att.value = newWindow.document.getElementById('pool_h').value;
+										layer.setAttributeNode(att);
 		
+										att = document.createAttribute("stride_x");
+										att.value = newWindow.document.getElementById('stride_x').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("stride_y");
+										att.value = newWindow.document.getElementById('stride_y').value;
+										layer.setAttributeNode(att);
+										
+										att = document.createAttribute("padding");
+										if (newWindow.document.getElementById('padding').checked == true)
+										{
+											att.value = 'checked';
+										}
+										else
+										{
+											att.value = '';
+										}
+										layer.setAttributeNode(att);
+									};
 		}
 	}
 
