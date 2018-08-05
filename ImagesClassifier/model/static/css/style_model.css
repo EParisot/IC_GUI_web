@@ -40,6 +40,13 @@
 	border-color: black;
 	}
 	
+#commands_div {
+	padding: 10px 10px 10px 10px ;
+	border-style: solid;
+	border-width: 2px;
+	border-color: black;
+	}
+	
 #layers_div {
 
 	display: flex;
@@ -47,6 +54,9 @@
 	align-items: center;
 	justify-content: space-around;
 	padding: 10px 10px 10px 10px ;
+	border-style: solid;
+	border-width: 2px;
+	border-color: black;
 	}
 
 }
@@ -79,6 +89,9 @@
 		align-items: center;
 		justify-content: space-around;
 		padding: 10px 10px 10px 10px ;
+		border-style: solid;
+		border-width: 2px;
+		border-color: black;
 	}
 
 	#tools_div {
@@ -98,6 +111,13 @@
 	}
 	
 	#trash_div {
+		padding: 10px 10px 10px 10px ;
+		border-style: solid;
+		border-width: 2px;
+		border-color: black;
+	}
+	
+	#commands_div {
 		padding: 10px 10px 10px 10px ;
 		border-style: solid;
 		border-width: 2px;

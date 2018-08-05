@@ -6,14 +6,27 @@
 
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/style_model.css' %}" />
-
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
 <div id="content_div">
 	<div id="model_div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
 	<br>
 	<p>Drag layers in your model:</p>
 	<div id="tools_div">
 		<div id="settings_div">
-			
+			<p>Type:</p>
+			<select id="type">
+				<option value="binary">binary</option>
+				<option value="categorical">categorical</option>
+				<option value="multiLayerPerceptron">multiLayerPerceptron</option>
+			</select>
+			<p>Optimizer:</p>
+			<select id="optimizer">
+				<option value="adadelta">adadelta</option>
+				<option value="adam">adam</option>
+				<option value="nadam">nadam</option>
+				<option value="rmsprop">rmsprop</option>
+				<option value="sgd">sgd</option>
+			</select>
 		</div>
 		<div id="layers_div">
 			<img id="in" class="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
@@ -28,6 +41,11 @@
 		</div>
 		<div id="trash_div">
 			<img id="trash" src="{% static 'img/trash.png' %}" ondrop="trash(event)" ondragover="allowDrop(event)">
+		</div>
+		<div id="commands_div">
+			<button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button>
+			<button id="export_but" onclick="export_model()"><img src="{% static 'img/export.png' %}" alt="export"></img></button>
+			
 		</div>
 	</div>
 </div>
@@ -56,7 +74,7 @@ function drop(ev) {
     var data = ev.dataTransfer.getData("text");
 	var elem = document.getElementById(data).cloneNode(true);
     ev.target.appendChild(elem);
-	if (ev.target.id == "model_div" && (elem.id == "in" || elem.id == "dense" || elem.id == "conv2d" || elem.id == "dropout" || elem.id == "max_pool"))
+	if (ev.target.id == "model_div")
 	{
 		set_layer(ev, elem.id);
 	}
@@ -76,8 +94,10 @@ function set_layer(ev, _class)
 {
 	if (ev.target.id == "model_div" || ev.target.parentNode.id == "model_div")
 	{
-		newWindow = window.open("set_layer", "", "height=400,width=400,status=yes,toolbar=no,menubar=no,location=no");
-		
+		if (_class == "in" || _class == "dense" || _class == "conv2d" || _class == "dropout" || _class == "max_pool")
+		{
+			newWindow = window.open("set_layer", "", "height=400,width=400,status=yes,toolbar=no,menubar=no,location=no");
+		}
 		var layer_id;
 		if (ev.target.id == "model_div")
 		{
@@ -94,22 +114,22 @@ function set_layer(ev, _class)
 		if (_class == "in")
 		{
 			var layer = document.getElementById(layer_id);
-			newWindow.document.write("<form><p>width dimension :</p><input type='text' id='dim_1' value='" + layer.getAttribute("dim_1") + "'></input><p>height dimension :</p><input type='text' id='dim_2'value='" + layer.getAttribute("dim_2") + "'></input><p>channels dimension :</p><input type='text' id='dim_3'value='" + layer.getAttribute("dim_3") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			newWindow.document.write("<form><p>height dimension :</p><input type='text' id='dim_1' value='" + layer.getAttribute("data-dim_1") + "' autofocus></input><p>width dimension :</p><input type='text' id='dim_2'value='" + layer.getAttribute("data-dim_2") + "'></input><p>channels dimension :</p><input type='text' id='dim_3'value='" + layer.getAttribute("data-dim_3") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
 			var script = newWindow.document.createElement("script");
 			script.innerHTML = "function save_layer(ev){window.close();}";
 			newWindow.document.body.appendChild(script);
 			newWindow.onunload = function(){
 										var layer = document.getElementById(layer_id);
 										
-										var att = document.createAttribute("dim_1");
+										var att = document.createAttribute("data-dim_1");
 										att.value = newWindow.document.getElementById('dim_1').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("dim_2");
+										att = document.createAttribute("data-dim_2");
 										att.value = newWindow.document.getElementById('dim_2').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("dim_3");
+										att = document.createAttribute("data-dim_3");
 										att.value = newWindow.document.getElementById('dim_3').value;
 										layer.setAttributeNode(att);
 									};
@@ -117,14 +137,14 @@ function set_layer(ev, _class)
 		else if (_class == "dense")
 		{
 			var layer = document.getElementById(layer_id);
-			newWindow.document.write("<form><p>neurons :</p><input type='text' id='neurons' value='" + layer.getAttribute("neurons") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			newWindow.document.write("<form><p>neurons :</p><input type='text' id='neurons' value='" + layer.getAttribute("data-neurons") + "' autofocus></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
 			var script = newWindow.document.createElement("script");
 			script.innerHTML = "function save_layer(ev){window.close();}";
 			newWindow.document.body.appendChild(script);
 			newWindow.onunload = function(){
 										var layer = document.getElementById(layer_id);
 										
-										var att = document.createAttribute("neurons");
+										var att = document.createAttribute("data-neurons");
 										att.value = newWindow.document.getElementById('neurons').value;
 										layer.setAttributeNode(att);
 									};
@@ -132,34 +152,34 @@ function set_layer(ev, _class)
 		else if (_class == "conv2d")
 		{
 			var layer = document.getElementById(layer_id);
-			newWindow.document.write("<form><p>filters:</p><input type='text' id='filters' value='" + layer.getAttribute("filters") + "'></input><div style='display:flex;justify-content:space-between;'><div><p>kernel w:</p><input type='text' id='kernel_w' value='" + layer.getAttribute("kernel_w") + "'></input></div><div><p>kernel h:</p><input type='text' id='kernel_h' value='" + layer.getAttribute("kernel_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			newWindow.document.write("<form><p>filters:</p><input type='text' id='filters' value='" + layer.getAttribute("data-filters") + "' autofocus></input><div style='display:flex;justify-content:space-between;'><div><p>kernel w:</p><input type='text' id='kernel_w' value='" + layer.getAttribute("data-kernel_w") + "'></input></div><div><p>kernel h:</p><input type='text' id='kernel_h' value='" + layer.getAttribute("data-kernel_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("data-stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("data-stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("data-padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
 			var script = newWindow.document.createElement("script");
 			script.innerHTML = "function save_layer(ev){window.close();}";
 			newWindow.document.body.appendChild(script);
 			newWindow.onunload = function(){
 										var layer = document.getElementById(layer_id);
 
-										var att = document.createAttribute("filters");
+										var att = document.createAttribute("data-filters");
 										att.value = newWindow.document.getElementById('filters').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("kernel_w");
+										att = document.createAttribute("data-kernel_w");
 										att.value = newWindow.document.getElementById('kernel_w').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("kernel_h");
+										att = document.createAttribute("data-kernel_h");
 										att.value = newWindow.document.getElementById('kernel_h').value;
 										layer.setAttributeNode(att);
 		
-										att = document.createAttribute("stride_x");
+										att = document.createAttribute("data-stride_x");
 										att.value = newWindow.document.getElementById('stride_x').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("stride_y");
+										att = document.createAttribute("data-stride_y");
 										att.value = newWindow.document.getElementById('stride_y').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("padding");
+										att = document.createAttribute("data-padding");
 										if (newWindow.document.getElementById('padding').checked == true)
 										{
 											att.value = 'checked';
@@ -174,14 +194,14 @@ function set_layer(ev, _class)
 		else if (_class == "dropout")
 		{
 			var layer = document.getElementById(layer_id);
-			newWindow.document.write("<form><p>ratio :</p><input type='text' id='ratio' value='" + layer.getAttribute("ratio") + "'></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			newWindow.document.write("<form><p>ratio :</p><input type='text' id='ratio' value='" + layer.getAttribute("data-ratio") + "' autofocus></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
 			var script = newWindow.document.createElement("script");
 			script.innerHTML = "function save_layer(ev){window.close();}";
 			newWindow.document.body.appendChild(script);
 			newWindow.onunload = function(){
 										var layer = document.getElementById(layer_id);
 										
-										var att = document.createAttribute("ratio");
+										var att = document.createAttribute("data-ratio");
 										att.value = newWindow.document.getElementById('ratio').value;
 										layer.setAttributeNode(att);
 									};
@@ -189,30 +209,30 @@ function set_layer(ev, _class)
 		else if (_class == "max_pool")
 		{
 			var layer = document.getElementById(layer_id);
-			newWindow.document.write("<form><div style='display:flex;justify-content:space-between;'><div><p>pool w:</p><input type='text' id='pool_w' value='" + layer.getAttribute("pool_w") + "'></input></div><div><p>pool h:</p><input type='text' id='pool_h' value='" + layer.getAttribute("pool_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
+			newWindow.document.write("<form><div style='display:flex;justify-content:space-between;'><div><p>pool w:</p><input type='text' id='pool_w' value='" + layer.getAttribute("data-pool_w") + "' autofocus></input></div><div><p>pool h:</p><input type='text' id='pool_h' value='" + layer.getAttribute("data-pool_h") + "'></input></div></div><div style='display:flex;justify-content:space-between;'><div><p>stride x:</p><input type='text' id='stride_x' value='" + layer.getAttribute("data-stride_x") + "'></input></div><div><p>stride y:</p><input type='text' id='stride_y' value='" + layer.getAttribute("data-stride_y") + "'></input></div></div><p>padding:</p><input type='checkbox' id='padding' " + layer.getAttribute("data-padding") + "></input><br><br><button onclick='save_layer(event)'>Save</button></form>");
 			var script = newWindow.document.createElement("script");
 			script.innerHTML = "function save_layer(ev){window.close();}";
 			newWindow.document.body.appendChild(script);
 			newWindow.onunload = function(){
 										var layer = document.getElementById(layer_id);
 									
-										var att = document.createAttribute("pool_w");
+										var att = document.createAttribute("data-pool_w");
 										att.value = newWindow.document.getElementById('pool_w').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("pool_h");
+										att = document.createAttribute("data-pool_h");
 										att.value = newWindow.document.getElementById('pool_h').value;
 										layer.setAttributeNode(att);
 		
-										att = document.createAttribute("stride_x");
+										att = document.createAttribute("data-stride_x");
 										att.value = newWindow.document.getElementById('stride_x').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("stride_y");
+										att = document.createAttribute("data-stride_y");
 										att.value = newWindow.document.getElementById('stride_y').value;
 										layer.setAttributeNode(att);
 										
-										att = document.createAttribute("padding");
+										att = document.createAttribute("data-padding");
 										if (newWindow.document.getElementById('padding').checked == true)
 										{
 											att.value = 'checked';
@@ -225,8 +245,69 @@ function set_layer(ev, _class)
 									};
 		}
 	}
-
 }
+
+function import_model()
+{
+	
+}
+	
+function export_model()
+{
+	var elem_list = document.getElementById('model_div').children;
+	var dict = {};
+	var i;
+	for (i=0;i<elem_list.length;i++)
+	{
+		var elem = elem_list[i];
+		dict[elem.id] = elem.dataset;
+	}
+	dict["type"] = document.getElementById("type").value;
+	dict["optimizer"] = document.getElementById("optimizer").value;
+	dict = JSON.stringify(dict);
+	post_to_url('export/' + dict);
+}
+
+
+var w = null;
+function post_to_url(url) 
+{
+	if (w)
+	{
+		w.close();
+	}
+	w = window.open(url,'Popup_Window','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
+
+	method = 'POST';
+	var form = w.document.createElement('form');
+	form.setAttribute('method', method);
+	form.setAttribute('action', url);
+	form.setAttribute('target', 'Popup_Window');
+	
+	var input = w.document.createElement('input');
+	input.type = 'hidden';
+	input.name = 'csrfmiddlewaretoken'
+	input.value = "{{ csrf_token }}";
+	form.appendChild(input);
+	w.document.body.appendChild(form);
+	
+	form.submit();
+}
+
+function closeIt()
+{
+	var count = document.querySelectorAll('#model_div img').length;
+	if (count > 0)
+	{
+		return "Any string value here forces a dialog box to \n" + 
+		"appear before closing the window.";
+	}
+	else
+	{
+		return
+	}
+}
+window.onbeforeunload = closeIt;
 </script>
 
 {% endblock %}
