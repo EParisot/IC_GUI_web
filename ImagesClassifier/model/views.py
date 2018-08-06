@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.encoding import smart_str
 from django.core.files.temp import NamedTemporaryFile
 from wsgiref.util import FileWrapper
 import os
+
+from .models import Model_file
+from .forms import ModelForm
 
 @login_required
 def index(request):
@@ -18,7 +23,6 @@ def set_layer(request):
 def export(request, data):
     import json
     dict_data = json.loads(data)
-    print(dict_data)
     if (data and dict_data != None):
         if (len(dict_data) < 4):
             return HttpResponse('Error: Not enough layers')
@@ -112,7 +116,7 @@ def export(request, data):
         model = Sequential()
 
         input_shape = (dict_data['in_0']['dim_1'], dict_data['in_0']['dim_2'], dict_data['in_0']['dim_3'])
-        print(input_shape)
+        
         for key, value in dict_data.items():
             if (key != "type" and key != "optimizer"):
                 if key == "conv2d_1":
@@ -155,8 +159,35 @@ def save(request, data):
     name = request.GET.get('name', None)
     with open("media/"+ request.user.username + '/' + name + ".json", "w") as json_file:
         json_file.write(data)
+
+    model = Model_file()
+    model.owner = request.user
+    model.file.name = 'media/' + request.user.username + '/' + name + ".json"
+    model.save()
+
     response = HttpResponse(content_type='application/force-download')
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(name + ".json")
     response['X-Sendfile'] = smart_str("media/" + request.user.username + "/" + name + ".json")
-    
     return response
+
+class uploadView(View):
+    def get(self, request):
+        models_list = Model_file.objects.filter(owner=self.request.user)
+        return render(self.request, 'model/import.html', {'models': models_list})
+
+    def post(self, request):
+        form = ModelForm(self.request.POST, self.request.FILES)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = self.request.user
+            model.file.name = self.request.user.username + '/' + model.file.name
+            model.save()
+            data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url}
+        else:
+            data = {'is_valid': False}
+        return JsonResponse(data)
+
+def load(request):
+    layers_list = []
+    filename = request.GET.get('filename', None)
+    return render(request, 'model/model.html', {'model': layers_list})

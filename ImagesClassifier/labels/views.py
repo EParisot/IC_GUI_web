@@ -21,7 +21,6 @@ class uploadView(View):
             photo.owner = self.request.user
             photo.file.name = photo.owner.username + '/' + photo.file.name
             photo.save()
-            print(photo.owner)
             data = {'is_valid': True, 'name': photo.file.name, 'url': photo.file.url}
         else:
             data = {'is_valid': False}

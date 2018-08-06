@@ -249,7 +249,7 @@ function set_layer(ev, _class)
 
 function import_model()
 {
-	
+	post_to_url('import');
 }
 	
 function export_model()
@@ -276,7 +276,7 @@ function post_to_url(url)
 	{
 		w.close();
 	}
-	w = window.open(url,'Popup_Window','toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
+	w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
 
 	method = 'POST';
 	var form = w.document.createElement('form');

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_model.css' %}" />
+
+</head>
+<body>
+
+{# JQUERY FILE UPLOAD SCRIPTS #}
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
+<script src="{% static 'scripts/jquery.ui.widget.js' %}"></script>
+<script src="{% static 'scripts/jquery.iframe-transport.js' %}"></script>
+<script src="{% static 'scripts/jquery.fileupload.js' %}"></script>
+<script src="{% static 'scripts/upload_model.js' %}"></script>
+
+
+{# BUTTON TO TRIGGER THE ACTION #}
+<button type="button" class="btn btn-primary js-upload-photos" style="margin: 10px 10px 10px 10px;">
+	<span class="glyphicon glyphicon-cloud-upload"></span> Upload model file
+</button>
+
+<div id="content_div">	
+	<div id="gallery">
+		{# FILE INPUT TO BE USED BY THE PLUG-IN #}
+		<input id="fileupload" type="file" name="file" multiple
+			   style="display: none;"
+			   data-url="{% url 'import' %}"
+			   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+
+		{# DISPLAY THE UPLOADED FILE #}
+			{% for model in models %}
+				<a onclick="load_data('{{ model.file.url }}')">{{ model.file.name }}</a>
+			{% endfor %}
+	</div>
+</div>
+<script>
+function load_data(url)
+{
+	var model_div = window.opener.document.getElementById("model_div");
+	
+	model_div.innerHTML = "";
+	
+	$.getJSON(url, function (data) {
+    $.each(data, function (index, value) {
+       if (value.constructor === Array)
+	   {
+			if (value[0].class_name == 'Dense')
+			{
+				var layer = window.opener.document.createElement('img');
+				
+				layer.id = 'in_0';
+				layer.className = 'in';
+				layer.src = "{% static 'img/in_layer.png' %}";
+				layer.draggable = "true";
+				
+				var att = document.createAttribute("ondragstart");
+				att.value = "drag(event)";
+				layer.setAttributeNode(att);
+	
+				att = document.createAttribute("onclick");
+				att.value = "set_layer(event, this.className)";
+				layer.setAttributeNode(att);
+				
+				att = document.createAttribute("data-dim_1");
+				att.value = value[0].config.batch_input_shape[1];
+				layer.setAttributeNode(att);
+				
+				window.opener.document.getElementById('model_div').appendChild(layer);
+			}
+			else if (value[0].class_name == 'Conv2D')
+			{
+				var layer = window.opener.document.createElement('img');
+				
+				layer.id = 'in_0';
+				layer.className = 'in';
+				layer.src = "{% static 'img/in_layer.png' %}";
+				layer.draggable = "true";
+				
+				var att = document.createAttribute("ondragstart");
+				att.value = "drag(event)";
+				layer.setAttributeNode(att);
+	
+				att = document.createAttribute("onclick");
+				att.value = "set_layer(event, this.className)";
+				layer.setAttributeNode(att);
+				
+				att = document.createAttribute("data-dim_1");
+				att.value = value[0].config.batch_input_shape[1];
+				layer.setAttributeNode(att);
+				
+				att = document.createAttribute("data-dim_2");
+				att.value = value[0].config.batch_input_shape[2];
+				layer.setAttributeNode(att);
+				
+				att = document.createAttribute("data-dim_3");
+				att.value = value[0].config.batch_input_shape[3];
+				layer.setAttributeNode(att);
+				
+				window.opener.document.getElementById('model_div').appendChild(layer);
+			}
+			else
+			{
+				window.alert("Error : incompatible model");
+			}
+			
+			var i;
+			for (i = 0; i < value.length; i++)
+			{
+				if (value[i].class_name == 'Conv2D' && value[i].id != "in_0")
+				{
+					var layer = window.opener.document.createElement('img');
+				
+					layer.id = 'conv2d_' + (i + 1).toString();
+					layer.className = 'conv2d';
+					layer.src = "{% static 'img/conv2d.png' %}";
+					layer.draggable = "true";
+					
+					var att = document.createAttribute("ondragstart");
+					att.value = "drag(event)";
+					layer.setAttributeNode(att);
+		
+					att = document.createAttribute("onclick");
+					att.value = "set_layer(event, this.className)";
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-filters");
+					att.value = value[i].config.filters;
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-kernel_h");
+					att.value = value[i].config.kernel_size[0];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-kernel_w");
+					att.value = value[i].config.kernel_size[1];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-stride_y");
+					att.value = value[i].config.strides[0];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-stride_x");
+					att.value = value[i].config.strides[1];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-padding");
+					att.value = value[i].config.padding;
+					if (att.value != "valid")
+					{
+						att.value = "checked";
+					}
+					layer.setAttributeNode(att);
+					
+					window.opener.document.getElementById('model_div').appendChild(layer);
+				}
+				else if (value[i].class_name == 'Dense')
+				{
+					var layer = window.opener.document.createElement('img');
+				
+					layer.id = 'dense_' + (i + 1).toString();
+					layer.className = 'dense';
+					layer.src = "{% static 'img/dense.png' %}";
+					layer.draggable = "true";
+					
+					var att = document.createAttribute("ondragstart");
+					att.value = "drag(event)";
+					layer.setAttributeNode(att);
+		
+					att = document.createAttribute("onclick");
+					att.value = "set_layer(event, this.className)";
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-neurons");
+					att.value = value[i].config.units;
+					layer.setAttributeNode(att);
+					
+					window.opener.document.getElementById('model_div').appendChild(layer);
+					
+				}
+				else if (value[i].class_name == 'Activation')
+				{
+					if (value[i].config['activation'] == "relu")
+					{
+						var layer = window.opener.document.createElement('img');
+				
+						layer.id = 'relu_' + (i + 1).toString();
+						layer.className = 'relu';
+						layer.src = "{% static 'img/relu_activation.png' %}";
+						layer.draggable = "true";
+						
+						var att = document.createAttribute("ondragstart");
+						att.value = "drag(event)";
+						layer.setAttributeNode(att);
+						
+						window.opener.document.getElementById('model_div').appendChild(layer);
+						
+					}
+					else if (value[i].config['activation'] == "sigmoid")
+					{
+						var layer = window.opener.document.createElement('img');
+				
+						layer.id = 'sig_' + (i + 1).toString();
+						layer.className = 'sig';
+						layer.src = "{% static 'img/sig_activation.png' %}";
+						layer.draggable = "true";
+						
+						var att = document.createAttribute("ondragstart");
+						att.value = "drag(event)";
+						layer.setAttributeNode(att);
+						
+						window.opener.document.getElementById('model_div').appendChild(layer);
+					}
+					else if (value[i].config['activation'] == "softmax")
+					{
+						var layer = window.opener.document.createElement('img');
+				
+						layer.id = 'softmax_' + (i + 1).toString();
+						layer.className = 'softmax';
+						layer.src = "{% static 'img/softmax_activation.png' %}";
+						layer.draggable = "true";
+						
+						var att = document.createAttribute("ondragstart");
+						att.value = "drag(event)";
+						layer.setAttributeNode(att);
+						
+						window.opener.document.getElementById('model_div').appendChild(layer);
+					}
+				}
+				else if (value[i].class_name == 'Dropout')
+				{
+					var layer = window.opener.document.createElement('img');
+				
+					layer.id = 'dropout_' + (i + 1).toString();
+					layer.className = 'dropout';
+					layer.src = "{% static 'img/dropout.png' %}";
+					layer.draggable = "true";
+					
+					var att = document.createAttribute("ondragstart");
+					att.value = "drag(event)";
+					layer.setAttributeNode(att);
+		
+					att = document.createAttribute("onclick");
+					att.value = "set_layer(event, this.className)";
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-ratio");
+					att.value = value[i].config.rate;
+					layer.setAttributeNode(att);
+					
+					window.opener.document.getElementById('model_div').appendChild(layer);
+				}
+				else if (value[i].class_name == 'Flatten')
+				{
+					var layer = window.opener.document.createElement('img');
+				
+					layer.id = 'flatten_' + (i + 1).toString();
+					layer.className = 'flatten';
+					layer.src = "{% static 'img/flatten.png' %}";
+					layer.draggable = "true";
+					
+					var att = document.createAttribute("ondragstart");
+					att.value = "drag(event)";
+					layer.setAttributeNode(att);
+						
+					window.opener.document.getElementById('model_div').appendChild(layer);
+
+				}
+				else if (value[i].class_name == 'MaxPooling2D')
+				{
+					var layer = window.opener.document.createElement('img');
+				
+					layer.id = 'max_pool_' + (i + 1).toString();
+					layer.className = 'max_pool';
+					layer.src = "{% static 'img/max_pool.png' %}";
+					layer.draggable = "true";
+					
+					var att = document.createAttribute("ondragstart");
+					att.value = "drag(event)";
+					layer.setAttributeNode(att);
+		
+					att = document.createAttribute("onclick");
+					att.value = "set_layer(event, this.className)";
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-pool_h");
+					att.value = value[i].config.pool_size[0];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-pool_w");
+					att.value = value[i].config.pool_size[1];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-stride_y");
+					att.value = value[i].config.strides[0];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-stride_x");
+					att.value = value[i].config.strides[1];
+					layer.setAttributeNode(att);
+					
+					att = document.createAttribute("data-padding");
+					att.value = value[i].config.padding;
+					if (att.value != "valid")
+					{
+						att.value = "checked";
+					}
+					layer.setAttributeNode(att);
+					
+					window.opener.document.getElementById('model_div').appendChild(layer);
+				}
+			}
+		}
+		});
+	});
+	
+	//window.close();
+}
+</script>
+</body>
+</html>
