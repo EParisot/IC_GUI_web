@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.encoding import smart_str
+from django.core.files.temp import NamedTemporaryFile
+from wsgiref.util import FileWrapper
+import os
 
 @login_required
 def index(request):
@@ -135,6 +139,24 @@ def export(request, data):
         model.compile(optimizer=dict_data["optimizer"], loss=dict_data["type"], metrics=['accuracy'])
 
         model.summary()
-        return HttpResponse(model.to_json())
+
+        model_json = model.to_json()
+
+        response = HttpResponse()
+        response.write("<form action='save/" + model_json + "/'><input name='name' type='text' value='myModel'><button type='submit'>Save</button></form>")
+        response.write("<p>" + model_json + "</p>")
+
+        return response
     else:
         return HttpResponse('Error: no data')
+
+@login_required
+def save(request, data):
+    name = request.GET.get('name', None)
+    with open("media/"+ request.user.username + '/' + name + ".json", "w") as json_file:
+        json_file.write(data)
+    response = HttpResponse(content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(name + ".json")
+    response['X-Sendfile'] = smart_str("media/" + request.user.username + "/" + name + ".json")
+    
+    return response
