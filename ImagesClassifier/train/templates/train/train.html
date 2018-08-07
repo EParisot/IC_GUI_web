@@ -4,4 +4,136 @@
 
 {% block content %}
 
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_train.css' %}" />
+
+{# JQUERY FILE UPLOAD SCRIPTS #}
+<script src="{% static 'scripts/jquery.min.js' %}"></script>
+<script src="{% static 'scripts/jquery.ui.widget.js' %}"></script>
+<script src="{% static 'scripts/jquery.iframe-transport.js' %}"></script>
+<script src="{% static 'scripts/jquery.fileupload.js' %}"></script>
+<script src="{% static 'scripts/jszip-utils.min.js' %}"></script>
+<script src="{% static 'scripts/upload_images.js' %}"></script>
+
+<div id="content_div">
+	<table id="table">
+		<tr>
+			<td></td>
+			<th>Dataset</th>
+			<th>Model</th>
+			<td></td>
+		</tr>
+		<tr>
+			<th>dim_1 : </th>
+			<td id="d_dim_1"> {{ photos_dim.0 }} </td>
+			<td id="m_dim_1"> {{ model_infos.1 }} </td>
+			<td><img id="state_1"></img></td>
+		</tr>
+		<tr>
+			<th>dim_2 : </th>
+			<td id="d_dim_2"> {{ photos_dim.1 }} </td>
+			<td id="m_dim_2"> {{ model_infos.2 }} </td>
+			<td><img id="state_2"></img></td>
+		</tr>
+		<tr>
+			<th>dim_3 : </th>
+			<td id="d_dim_3"> {{ photos_dim.2 }} </td>
+			<td id="m_dim_3"> {{ model_infos.3 }} </td>
+			<td><img id="state_3"></img></td>
+		</tr>
+		<tr>
+			<th>output : </th>
+			<td id="d_out"> {{ labels_list|length }} </td>
+			<td id="m_out"> {{ model_infos.0 }} </td>
+			<td><img id="state_out"></img></td>
+		</tr>
+		<tr>
+			<th>datas : </th>
+			<td> {{ photos|length }} </td>
+			<td><button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button></td>
+			<td></td>
+		</tr>
+	</table>
+	<div>
+		
+	</div>
+</div>
+
+<script>
+function check()
+{
+	if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML)
+	{
+		document.getElementById("state_1").src = "{% static 'img/ok.png' %}";
+	}
+	else
+	{
+		document.getElementById("state_1").src = "{% static 'img/nok.png' %}";	
+	}
+	if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML)
+	{
+		document.getElementById("state_2").src = "{% static 'img/ok.png' %}";
+	}
+	else
+	{
+		document.getElementById("state_2").src = "{% static 'img/nok.png' %}";	
+	}
+	if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML)
+	{
+		document.getElementById("state_3").src = "{% static 'img/ok.png' %}";
+	}
+	else
+	{
+		document.getElementById("state_3").src = "{% static 'img/nok.png' %}";	
+	}
+	if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML)
+	{
+		document.getElementById("state_out").src = "{% static 'img/ok.png' %}";
+	}
+	else
+	{
+		document.getElementById("state_out").src = "{% static 'img/nok.png' %}";	
+	}
+}
+
+if (window.addEventListener) {
+	window.addEventListener('load', check);
+} else if (window.attachEvent) {
+    window.attachEvent('onload', check);
+} else { 
+    window.onload = check;
+}
+
+function import_model()
+{
+	post_to_url('import');
+	check();
+}
+
+var w = null;
+function post_to_url(url) 
+{
+	if (w)
+	{
+		w.close();
+	}
+	w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
+
+	method = 'POST';
+	var form = w.document.createElement('form');
+	form.setAttribute('method', method);
+	form.setAttribute('action', url);
+	form.setAttribute('target', 'Popup_Window');
+	
+	var input = w.document.createElement('input');
+	input.type = 'hidden';
+	input.name = 'csrfmiddlewaretoken'
+	input.value = "{{ csrf_token }}";
+	form.appendChild(input);
+	w.document.body.appendChild(form);
+	
+	form.submit();
+}
+</script>
+
 {% endblock %}

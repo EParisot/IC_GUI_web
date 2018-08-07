@@ -4,10 +4,8 @@ from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.encoding import smart_str
-from django.core.files.temp import NamedTemporaryFile
-from wsgiref.util import FileWrapper
 import os
-
+import json
 from .models import Model_file
 from .forms import ModelForm
 
@@ -21,22 +19,21 @@ def set_layer(request):
 
 @login_required
 def export(request, data):
-    import json
     dict_data = json.loads(data)
     if (data and dict_data != None):
         if (len(dict_data) < 4):
             return HttpResponse('Error: Not enough layers')
-        if (dict_data['type'] != 'binary' and dict_data['type'] != 'categorical' and dict_data['type'] != 'multiLayerPerceptron'):
-            return HttpResponse('Error: wrong type')
-        else:
-            if dict_data['type'] == "binary":
-                dict_data['type'] = "binary_crossentropy"
-            elif dict_data['type'] == "categorial":
-                dict_data['type'] = "categorial_crossentropy"
-            elif dict_data['type'] == "multiLayerPerceptron":
-                dict_data['type'] = "mse"
-        if (dict_data['optimizer'] != 'adadelta' and dict_data['optimizer'] != 'adam' and dict_data['optimizer'] != 'nadam' and dict_data['optimizer'] != 'rmsprop' and dict_data['optimizer'] != 'sgd'):
-            return HttpResponse('Error: wrong optimizer')
+##        if (dict_data['type'] != 'binary' and dict_data['type'] != 'categorical' and dict_data['type'] != 'multiLayerPerceptron'):
+##            return HttpResponse('Error: wrong type')
+##        else:
+##            if dict_data['type'] == "binary":
+##                dict_data['type'] = "binary_crossentropy"
+##            elif dict_data['type'] == "categorial":
+##                dict_data['type'] = "categorial_crossentropy"
+##            elif dict_data['type'] == "multiLayerPerceptron":
+##                dict_data['type'] = "mse"
+##        if (dict_data['optimizer'] != 'adadelta' and dict_data['optimizer'] != 'adam' and dict_data['optimizer'] != 'nadam' and dict_data['optimizer'] != 'rmsprop' and dict_data['optimizer'] != 'sgd'):
+##            return HttpResponse('Error: wrong optimizer')
         
         if not ('in_0' in dict_data):
             return HttpResponse('Error: first layer should be of type "In"')
@@ -140,7 +137,7 @@ def export(request, data):
                 elif "softmax" in key:
                     model.add(Activation('softmax'))
                     
-        model.compile(optimizer=dict_data["optimizer"], loss=dict_data["type"], metrics=['accuracy'])
+        #model.compile(optimizer=dict_data["optimizer"], loss=dict_data["type"], metrics=['accuracy'])
 
         model.summary()
 
@@ -187,6 +184,7 @@ class uploadView(View):
             data = {'is_valid': False}
         return JsonResponse(data)
 
+@login_required
 def load(request):
     layers_list = []
     filename = request.GET.get('filename', None)

@@ -12,7 +12,7 @@
 	<br>
 	<p>Drag layers in your model:</p>
 	<div id="tools_div">
-		<div id="settings_div">
+		<!--<div id="settings_div">
 			<p>Type:</p>
 			<select id="type">
 				<option value="binary">binary</option>
@@ -27,7 +27,7 @@
 				<option value="rmsprop">rmsprop</option>
 				<option value="sgd">sgd</option>
 			</select>
-		</div>
+		</div>-->
 		<div id="layers_div">
 			<img id="in" class="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
 			<img id="dense" class="dense" src="{% static 'img/dense.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
@@ -262,8 +262,8 @@ function export_model()
 		var elem = elem_list[i];
 		dict[elem.id] = elem.dataset;
 	}
-	dict["type"] = document.getElementById("type").value;
-	dict["optimizer"] = document.getElementById("optimizer").value;
+	//dict["type"] = document.getElementById("type").value;
+	//dict["optimizer"] = document.getElementById("optimizer").value;
 	dict = JSON.stringify(dict);
 	post_to_url('export/' + dict);
 }
