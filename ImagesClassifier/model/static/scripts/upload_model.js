@@ -25,7 +25,7 @@ $(function () {
     //},
     done: function (e, data) {  /* 3. PROCESS THE RESPONSE FROM THE SERVER */
       if (data.result.is_valid) {
-			$("#gallery").prepend("<a onclick='load_data(" + data.file.name.toString() + ")' >" + data.result.name + "</a>")
+			$("#gallery").prepend("<a onclick='load_data(" + "\" " + data.result.url + "\" " + ")' >" + data.result.name + "</a><br>")
       }
     }
   });

@@ -31,7 +31,7 @@
 
 		{# DISPLAY THE UPLOADED FILE #}
 			{% for model in models %}
-				<a onclick="load_data('{{ model.file.url }}')">{{ model.file.name }}</a>
+				<a onclick="load_data('{{ model.file.url }}')">{{ model.file.name }}</a><br>
 			{% endfor %}
 	</div>
 </div>
