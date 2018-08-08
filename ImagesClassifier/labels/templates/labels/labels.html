@@ -67,14 +67,14 @@
 
 <script>
 	//Set Sizes
-	var H = window.screen.height / 2;
-	if (window.screen.width < 768)
+	var H = window.innerHeight / 2;
+	if (window.innerWidth < 768)
 	{
-		var W = window.screen.width;
+		var W = window.innerWidth;
 	}
 	else
 	{
-		var W = window.screen.width / 2;
+		var W = window.innerWidth / 2;
 	}
 	document.getElementById("pic_div").style.width = W.toString()+'px';
 	document.getElementById("pic_div").style.height = H.toString()+'px';

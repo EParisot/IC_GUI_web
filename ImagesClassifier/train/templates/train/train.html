@@ -16,48 +16,96 @@
 <script src="{% static 'scripts/upload_images.js' %}"></script>
 
 <div id="content_div">
-	<table id="table">
-		<tr>
-			<td></td>
-			<th>Dataset</th>
-			<th>Model</th>
-			<td></td>
-		</tr>
-		<tr>
-			<th>dim_1 : </th>
-			<td id="d_dim_1"> {{ photos_dim.0 }} </td>
-			<td id="m_dim_1"> {{ model_infos.1 }} </td>
-			<td><img id="state_1"></img></td>
-		</tr>
-		<tr>
-			<th>dim_2 : </th>
-			<td id="d_dim_2"> {{ photos_dim.1 }} </td>
-			<td id="m_dim_2"> {{ model_infos.2 }} </td>
-			<td><img id="state_2"></img></td>
-		</tr>
-		<tr>
-			<th>dim_3 : </th>
-			<td id="d_dim_3"> {{ photos_dim.2 }} </td>
-			<td id="m_dim_3"> {{ model_infos.3 }} </td>
-			<td><img id="state_3"></img></td>
-		</tr>
-		<tr>
-			<th>output : </th>
-			<td id="d_out"> {{ labels_list|length }} </td>
-			<td id="m_out"> {{ model_infos.0 }} </td>
-			<td><img id="state_out"></img></td>
-		</tr>
-		<tr>
-			<th>datas : </th>
-			<td> {{ photos|length }} </td>
-			<td><button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button></td>
-			<td></td>
-		</tr>
-	</table>
 	<div>
-		
+		<table id="table">
+			<tr>
+				<td></td>
+				<th>Dataset</th>
+				<th>Model</th>
+				<td></td>
+			</tr>
+			<tr>
+				<th>dim_1 : </th>
+				<td id="d_dim_1"> {{ photos_dim.0 }} </td>
+				<td id="m_dim_1"> {{ model_infos.1 }} </td>
+				<td><img id="state_1"></img></td>
+			</tr>
+			<tr>
+				<th>dim_2 : </th>
+				<td id="d_dim_2"> {{ photos_dim.1 }} </td>
+				<td id="m_dim_2"> {{ model_infos.2 }} </td>
+				<td><img id="state_2"></img></td>
+			</tr>
+			<tr>
+				<th>dim_3 : </th>
+				<td id="d_dim_3"> {{ photos_dim.2 }} </td>
+				<td id="m_dim_3"> {{ model_infos.3 }} </td>
+				<td><img id="state_3"></img></td>
+			</tr>
+			<tr>
+				<th>output : </th>
+				<td id="d_out"> {{ labels_nb }} </td>
+				<td id="m_out"> {{ model_infos.0 }} </td>
+				<td><img id="state_out"></img></td>
+			</tr>
+			<tr>
+				<th>datas : </th>
+				<td> {{ photos|length }} </td>
+				<td><button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button></td>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+	<div id="settings_div">
+		<table id="settings_table">
+			<tr>
+				<th>Type</th>
+				<th>Optimizer</th>
+				<th>Batch Size</th>
+				<th>Epochs</th>
+				<th>Validation Split</th>
+				<th>Early Stop</th>
+				<th>Patience</th>
+			</tr>
+			<tr>
+				<td>
+					<select id="type">
+						<!--<option value="mlp">MLP</option>
+						<option value="binary_crossentropy">binary</option>-->
+						<option value="categorical_crossentropy">categorical</option>
+					</select>
+				</td>
+				<td>
+					<select id="optimizer">
+						<option value="adadelta">adadelta</option>
+						<option value="adam">adam</option>
+						<option value="nadam">nadam</option>
+						<option value="rmsprop">rmsprop</option>
+						<option value="sgd">sgd</option>
+					</select>
+				</td>
+				<td>
+					<input id="batch_size" type="text" value="1"></input>
+				</td>
+				<td>
+					<input id="epochs" type="text" value="1"></input>
+				</td>
+				<td>
+					<input id="v_split" type="text" value="0.2"></input>
+				</td>
+				<td>
+					<input id="e_stop" type="checkbox"></input>
+				</td>
+				<td>
+					<input id="patience" type="text" value="5"></input>
+				</td>
+			</tr>
+		</table>
+		<button onclick="train()"><img src="{% static 'img/train.png' %}"></img></button>
 	</div>
 </div>
+
+<textarea id="train-log" cols="100" rows="20"></textarea><br/>
 
 <script>
 function check()
@@ -110,6 +158,45 @@ function import_model()
 	check();
 }
 
+
+
+var trainSocket = new WebSocket(
+    'ws://' + window.location.host +
+    '/ws/train');
+
+trainSocket.onmessage = function(e) {
+    var data = JSON.parse(e.data);
+    var log = data['log'];
+    document.querySelector('#train-log').value += (log + '\n');
+};
+
+trainSocket.onclose = function(e) {
+    console.error('Train socket closed unexpectedly');
+};
+
+var None = null
+function train()
+{
+	if ({{ model_id }})
+	{
+		trainSocket.send(JSON.stringify({
+				'model_id': {{ model_id }},
+				'model_type': document.getElementById("type").value,
+				'optimizer': document.getElementById("optimizer").value,
+				'batch_size': document.getElementById("batch_size").value,
+				'epochs': document.getElementById("epochs").value,
+				'v_split': document.getElementById("v_split").value,
+				'e_stop': document.getElementById("e_stop").value,
+				'patience': document.getElementById("patience").value,
+			}));
+	}
+	else
+	{
+		window.alert("Import a Model before you start Training")
+	}
+}
+
+
 var w = null;
 function post_to_url(url) 
 {
@@ -120,6 +207,7 @@ function post_to_url(url)
 	w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
 
 	method = 'POST';
+
 	var form = w.document.createElement('form');
 	form.setAttribute('method', method);
 	form.setAttribute('action', url);
@@ -129,9 +217,9 @@ function post_to_url(url)
 	input.type = 'hidden';
 	input.name = 'csrfmiddlewaretoken'
 	input.value = "{{ csrf_token }}";
+	
 	form.appendChild(input);
 	w.document.body.appendChild(form);
-	
 	form.submit();
 }
 </script>

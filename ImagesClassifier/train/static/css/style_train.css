@@ -2,11 +2,24 @@
 		height: 100%;
 		display: flex;
 		flex-direction: row;
+		justify-content: space-around;
 		padding: 10px 10px 10px 10px ;
 }
 
-#table, th {
-	width:400px;
+#table{
+    border: 1px solid black;
+	border-collapse: collapse;
+}
+
+#settings_div{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+#settings_table{
+	height: 40%;
     border: 1px solid black;
 	border-collapse: collapse;
 }
@@ -14,6 +27,12 @@
 th, td {
 	text-align: center;
     padding: 5px;
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+input {
+	width: 60px;
 }
 
 #h_actions {
@@ -29,28 +48,37 @@ th, td {
 		justify-content: center;
 }
 
-#pic_div {
-		background-color: silver;
-}
-
-#gallery {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-start;
-
-		padding: 5%;
-		overflow: auto;
-		border-style: solid;
-		border-width: 2px;
-		border-color: black;
-}
-
 @media only screen and (max-width: 768px) {
 	#content_div {
 			height: 100%;
 			display: flex;
 			flex-direction: column;
 			padding: 0px 0px 0px 0px ;
+	}
+	
+	#table{
+    border: 1px solid black;
+	border-collapse: collapse;
+	}
+
+	#settings_div{
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+	}
+
+	#settings_table{
+		height: 40%;
+		border: 1px solid black;
+		border-collapse: collapse;
+	}
+
+	th, td {
+		text-align: center;
+		padding: 5px;
+		border: 1px solid black;
+		border-collapse: collapse;
 	}
 
 	#v_actions {
@@ -65,20 +93,4 @@ th, td {
 			justify-content: flex-start;
 	}
 
-	#pic_div {
-			background-color: silver;
-	}
-
-	#gallery {
-			width:100%;
-			display: flex;
-			flex-wrap: wrap;
-			align-items: flex-start;
-
-			padding: 5%;
-			overflow: auto;
-			border-style: solid;
-			border-width: 2px;
-			border-color: black;
-	}
 }

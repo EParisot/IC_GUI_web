@@ -23,18 +23,6 @@ def export(request, data):
     if (data and dict_data != None):
         if (len(dict_data) < 4):
             return HttpResponse('Error: Not enough layers')
-##        if (dict_data['type'] != 'binary' and dict_data['type'] != 'categorical' and dict_data['type'] != 'multiLayerPerceptron'):
-##            return HttpResponse('Error: wrong type')
-##        else:
-##            if dict_data['type'] == "binary":
-##                dict_data['type'] = "binary_crossentropy"
-##            elif dict_data['type'] == "categorial":
-##                dict_data['type'] = "categorial_crossentropy"
-##            elif dict_data['type'] == "multiLayerPerceptron":
-##                dict_data['type'] = "mse"
-##        if (dict_data['optimizer'] != 'adadelta' and dict_data['optimizer'] != 'adam' and dict_data['optimizer'] != 'nadam' and dict_data['optimizer'] != 'rmsprop' and dict_data['optimizer'] != 'sgd'):
-##            return HttpResponse('Error: wrong optimizer')
-        
         if not ('in_0' in dict_data):
             return HttpResponse('Error: first layer should be of type "In"')
         if not ('conv2d_1' in dict_data):

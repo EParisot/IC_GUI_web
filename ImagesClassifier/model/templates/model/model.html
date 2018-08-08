@@ -12,22 +12,6 @@
 	<br>
 	<p>Drag layers in your model:</p>
 	<div id="tools_div">
-		<!--<div id="settings_div">
-			<p>Type:</p>
-			<select id="type">
-				<option value="binary">binary</option>
-				<option value="categorical">categorical</option>
-				<option value="multiLayerPerceptron">multiLayerPerceptron</option>
-			</select>
-			<p>Optimizer:</p>
-			<select id="optimizer">
-				<option value="adadelta">adadelta</option>
-				<option value="adam">adam</option>
-				<option value="nadam">nadam</option>
-				<option value="rmsprop">rmsprop</option>
-				<option value="sgd">sgd</option>
-			</select>
-		</div>-->
 		<div id="layers_div">
 			<img id="in" class="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
 			<img id="dense" class="dense" src="{% static 'img/dense.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
@@ -53,8 +37,8 @@
 <script>
 
 //Set Sizes
-var H = window.screen.height / 2;
-var W = window.screen.width;
+var H = window.innerHeight / 2;
+var W = window.innerWidth;
 
 document.getElementById("model_div").style.width = W.toString()+'px';
 document.getElementById("model_div").style.height = H.toString()+'px';

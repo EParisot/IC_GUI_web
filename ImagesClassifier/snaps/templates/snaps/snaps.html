@@ -33,14 +33,14 @@
 <script>
 	var video = document.querySelector("#videoElement");
 	
-	var H = window.screen.height / 2; //screen height
-	if (window.screen.width < 768)
+	var H = window.innerHeight / 2; //screen height
+	if (window.innerWidth < 768)
 	{
-		var W = window.screen.width;
+		var W = window.innerWidth;
 	}
 	else
 	{
-		var W = window.screen.width / 2; //screen width
+		var W = window.innerWidth / 2; //screen width
 	}
 	
 	document.getElementById("video_div").style.width = W.toString()+'px';
@@ -70,15 +70,12 @@
 		document.getElementById("snap_btn").disabled=true;
 	}
 
-	var count = 0;
-
 	function snap() 
 	{
 		var canvas = document.createElement('canvas');
-		count += 1;
-		canvas.id = "x" + count.toString();
-		canvas.width = 120 * (W/H);
-		canvas.height = 120;
+		canvas.id = "pic" + (new Date()).getTime();
+		canvas.width = 160;
+		canvas.height = 128;
 		canvas.style.margin = "5px 5px 5px 5px";
 		canvas.selected = false;
 		canvas.addEventListener('click', function(event)
@@ -133,7 +130,7 @@
 
 			for (i = 0; i < canvas_list.length; ++i)
 			{
-				var image_name = "pic" + i.toString() + ".png";
+				var image_name = canvas_list[i].id + ".png";
 				var image_data = canvas_list[i].toDataURL("image/png");
 				zip.file(image_name, dataURItoBlob(image_data), {base64: true});
 			}

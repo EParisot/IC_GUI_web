@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_extensions',
+    'channels',
     'main',
     'snaps',
     'labels',
@@ -66,6 +67,18 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+ASGI_APPLICATION = "ImagesClassifier.routing.application"
+
+##CHANNEL_LAYERS = {
+##    "default": {
+##        "BACKEND": "asgi_redis.RedisChannelLayer",
+##        "CONFIG": {
+##            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+##        },
+##        "ROUTING": "train.routing.channel_routing",
+##    },
+##}
 
 ROOT_URLCONF = 'ImagesClassifier.urls'
 
