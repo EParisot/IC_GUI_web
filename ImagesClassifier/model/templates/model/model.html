@@ -246,12 +246,18 @@ function export_model()
 		var elem = elem_list[i];
 		dict[elem.id] = elem.dataset;
 	}
-	//dict["type"] = document.getElementById("type").value;
-	//dict["optimizer"] = document.getElementById("optimizer").value;
-	dict = JSON.stringify(dict);
-	post_to_url('export/' + dict);
-}
+	
+	if (elem.className == "softmax")
+	{
+		dict = JSON.stringify(dict);
+		post_to_url('export/' + dict);
 
+	}
+	else
+	{
+		window.alert("Model should end with a softmax layer");
+	}
+}
 
 var w = null;
 function post_to_url(url) 

@@ -11,7 +11,6 @@ from PIL import Image
 import json
 
 
-
 def get_datas(request, get_model):
     #Query images
     photos = Photo.objects.filter(owner=request.user)
@@ -33,8 +32,9 @@ def get_datas(request, get_model):
                     labels_nb = labels_nb + 1
                 labels_list.append(image.file.name.split('/')[-1].split('_')[0])
             else:
-                #error if no label on pic TODO
+                #error if no label on pic
                 labels_list = []
+                return render(self.request, 'train/train.html')
             #open image
             image = Image.open(image.file.name)
             image = np.array(image)

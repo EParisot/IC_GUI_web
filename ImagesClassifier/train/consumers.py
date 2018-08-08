@@ -2,6 +2,7 @@ from channels.generic.websocket import WebsocketConsumer
 from model.models import Model_file
 from train.views import get_datas
 import json
+import sys
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
@@ -25,7 +26,7 @@ class TrainConsumer(WebsocketConsumer):
             from keras.layers import Input, Conv2D, Dense, Flatten, Dropout, Activation, MaxPooling2D
             import keras.backend as K
             from keras.models import model_from_json
-            from keras.utils import to_categorical
+
             import numpy as np
             import pandas as pd
             import random
@@ -59,9 +60,12 @@ class TrainConsumer(WebsocketConsumer):
             e_stop = text_data_json['e_stop']
             patience = int(text_data_json['patience'])
 
-            print(batch_size, epochs, v_split, e_stop, patience)
-
             model.compile(optimizer=optimizer, loss=model_type, metrics=['accuracy'])
+
+            #Grab training output
+            base_stdout = sys.stdout
+            sys.stdout = Std_redirector(self)
+        
             model.summary()
             
             #Train Loop
@@ -69,9 +73,22 @@ class TrainConsumer(WebsocketConsumer):
             while x < epochs:
                history = model.fit(X, Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
                x = x + 1
+               for key, value in history.history.items():
+                   history.history[key] = round(value[0], 2)
                #output to logs
                self.send(text_data=json.dumps({'log': json.dumps(history.history)}))
-
+            #set output back
+            sys.stdout = base_stdout
+            
             #save model
             #import h5py
             
+class Std_redirector(object):
+    def __init__(self, cls):
+        self.cls = cls
+
+    def write(self,string):
+        self.cls.send(text_data=json.dumps({'output': string}))
+
+    def flush(self):
+        pass

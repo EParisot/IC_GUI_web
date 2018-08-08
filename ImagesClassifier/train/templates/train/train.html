@@ -15,6 +15,7 @@
 <script src="{% static 'scripts/jszip-utils.min.js' %}"></script>
 <script src="{% static 'scripts/upload_images.js' %}"></script>
 
+
 <div id="content_div">
 	<div>
 		<table id="table">
@@ -104,9 +105,15 @@
 		<button onclick="train()"><img src="{% static 'img/train.png' %}"></img></button>
 	</div>
 </div>
+<div id="content_div">
+	<textarea id="train-log" cols="100" rows="16"></textarea><br/>
 
-<textarea id="train-log" cols="100" rows="20"></textarea><br/>
 
+	<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+		<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	</div>
+	
+</div>
 <script>
 function check()
 {
@@ -159,19 +166,114 @@ function import_model()
 }
 
 
-
 var trainSocket = new WebSocket(
     'ws://' + window.location.host +
     '/ws/train');
 
+	
+trainSocket.onclose = function(e) {
+    console.error('Train socket closed unexpectedly');
+};
+
+var logs_acc = []
+var logs_loss = [] 
+var logs_val_acc = []
+var logs_val_loss = []
+var epoch = 0
+
 trainSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var log = data['log'];
-    document.querySelector('#train-log').value += (log + '\n');
-};
+	var output = data['output'];
+	if (output)
+	{
+		document.querySelector('#train-log').value += output;
+		document.querySelector('#train-log').scrollTop = document.querySelector('#train-log').scrollHeight;
+	}
+	if (log)
+	{
+		epoch++;
+		var logs_dict = JSON.parse(log);
+		logs_acc.push({x: epoch, y: logs_dict["acc"]});
+		logs_loss.push({x: epoch, y: logs_dict["loss"]});
+		logs_val_acc.push({x: epoch, y: logs_dict["val_acc"]});
+		logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
 
-trainSocket.onclose = function(e) {
-    console.error('Train socket closed unexpectedly');
+		function toggleDataSeries(e){
+			if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+				e.dataSeries.visible = false;
+			}
+			else{
+				e.dataSeries.visible = true;
+			}
+			chart.render();
+		}
+		
+		CanvasJS.addColorSet("customColorSet",
+		 [//colorSet Array
+		 "#ffff4d",
+		 "#4661EE",
+		 "#00cc44",
+		 "#ff4d4d",
+		]); 
+		
+		var chart = new CanvasJS.Chart("chartContainer",
+		{
+			animationEnabled: true,
+			title:{
+				text: "Training History"
+			},
+			colorSet: "customColorSet",
+			axisX: {
+				title: "Epoch",
+				valueFormatString: "#"
+			},
+			axisY: {
+				valueFormatString: "#.#"
+			},
+			legend:{
+				cursor: "pointer",
+				fontSize: 16,
+				itemclick: toggleDataSeries
+			},
+			toolTip:{
+				shared: true
+			},
+			data: [
+			{        
+				name: "Acc",
+				type: "spline",
+				yValueFormatString: "#.#",
+				showInLegend: true,
+				dataPoints: logs_acc
+			},
+			{        
+				name: "Loss",
+				type: "spline",
+				yValueFormatString: "#.#",
+				showInLegend: true,
+				dataPoints: logs_loss
+			},
+			{        
+				name: "Val_Acc",
+				type: "spline",
+				yValueFormatString: "#.#",
+				showInLegend: true,
+				dataPoints: logs_val_acc
+			},
+			{        
+				name: "Val_Loss",
+				type: "spline",
+				yValueFormatString: "#.#",
+				showInLegend: true,
+				dataPoints: logs_val_loss
+			}
+		  ]
+		});
+		
+		chart.render();
+	
+	}
 };
 
 var None = null
