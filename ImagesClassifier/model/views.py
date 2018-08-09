@@ -145,9 +145,7 @@ def save(request, data):
     with open("media/"+ request.user.username + '/' + name + ".json", "w") as json_file:
         json_file.write(data)
 
-    model = Model_file()
-    model.owner = request.user
-    model.file.name = 'media/' + request.user.username + '/' + name + ".json"
+    model, created = Model_file.objects.get_or_create(owner=request.user, file="media/" + request.user.username + '/' + name + ".json")
     model.save()
 
     response = HttpResponse(content_type='application/force-download')
