@@ -68,8 +68,6 @@ REST_FRAMEWORK = {
     )
 }
 
-ASGI_APPLICATION = "ImagesClassifier.routing.application"
-
 ##CHANNEL_LAYERS = {
 ##    "default": {
 ##        "BACKEND": "asgi_redis.RedisChannelLayer",
@@ -99,7 +97,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ImagesClassifier.wsgi.application'
-
+ASGI_APPLICATION = "ImagesClassifier.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases

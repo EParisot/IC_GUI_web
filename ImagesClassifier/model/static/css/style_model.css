@@ -1,13 +1,10 @@
 #content_div {
-
 	display: flex;
 	flex-direction: column;
-		
 	align-items: center;
 }
 
 #model_div {
-
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -22,32 +19,23 @@
 	align-items: center;
 	justify-content: space-around;
 	padding: 10px 10px 10px 10px ;
-	
-	}
+}
 	
 #trash_div {
 	padding: 10px 10px 10px 10px ;
 	border-style: solid;
 	border-width: 2px;
 	border-color: black;
-	}
-
-#settings_div {
-	padding: 10px 10px 10px 10px ;
-	border-style: solid;
-	border-width: 2px;
-	border-color: black;
-	}
+}
 	
 #commands_div {
 	padding: 10px 10px 10px 10px ;
 	border-style: solid;
 	border-width: 2px;
 	border-color: black;
-	}
+}
 	
 #layers_div {
-
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -56,22 +44,17 @@
 	border-style: solid;
 	border-width: 2px;
 	border-color: black;
-	}
-
 }
 
 
 @media only screen and (max-width: 768px) {
 	#content_div {
-
 		display: flex;
 		flex-direction: column;
-	
 		align-items: center;
 	}
 	
 	#model_div {
-
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -81,7 +64,6 @@
 	}
 	
 	#layers_div {
-
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -98,14 +80,6 @@
 		align-items: center;
 		justify-content: space-around;
 		padding: 10px 10px 10px 10px ;
-		
-	}
-	
-	#settings_div {
-		padding: 10px 10px 10px 10px ;
-		border-style: solid;
-		border-width: 2px;
-		border-color: black;
 	}
 	
 	#trash_div {

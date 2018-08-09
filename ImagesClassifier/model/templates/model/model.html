@@ -9,8 +9,6 @@
 <script src="{% static 'scripts/jquery.min.js' %}"></script>
 <div id="content_div">
 	<div id="model_div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-	<br>
-	<p>Drag layers in your model:</p>
 	<div id="tools_div">
 		<div id="layers_div">
 			<img id="in" class="in" src="{% static 'img/in_layer.png' %}" draggable="true" ondragstart="drag(event)" onclick="set_layer(event, this.className)">
@@ -37,11 +35,11 @@
 <script>
 
 //Set Sizes
-var H = window.innerHeight / 2;
+var H = window.innerHeight;
 var W = window.innerWidth;
 
 document.getElementById("model_div").style.width = W.toString()+'px';
-document.getElementById("model_div").style.height = H.toString()+'px';
+document.getElementById("model_div").style.height = (H/2).toString()+'px';
 document.getElementById("layers_div").style.width = (W/2).toString()+'px';
 document.getElementById("tools_div").style.width = (W).toString()+'px';
 

@@ -3,10 +3,16 @@ from model.models import Model_file
 from train.views import get_datas
 import json
 import sys
+import os
+from time import sleep
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
+        self.user = self.scope["user"]
+        import keras.backend as K
+        K.clear_session()
+        self.model = None
 
     def disconnect(self, close_code):
         pass
@@ -24,54 +30,50 @@ class TrainConsumer(WebsocketConsumer):
         if model_id != None:
             from  keras.models import Sequential
             from keras.layers import Input, Conv2D, Dense, Flatten, Dropout, Activation, MaxPooling2D
-            import keras.backend as K
             from keras.models import model_from_json
-
+            from keras.models import load_model
             import numpy as np
-            import pandas as pd
-            import random
+            import h5py
             
             #Prepare X Y
             self.user = self.scope["user"]
             data_dict = get_datas(self, False)
             X = data_dict["photos"]
-            Y = data_dict["labels_list"]
-
-            # Shuffle images and labels
-            zipped_list = list(zip(X, Y))
-            random.shuffle(zipped_list)
-            X, Y = zip(*zipped_list)
-            
-            X = np.array(X)/255
-            Y = np.array(pd.get_dummies(Y))
+            X = np.array(X)
+            Y = np.array(data_dict["labels_list"])
             
             #Prepare Model
-            K.clear_session()
             model = Model_file.objects.get(id=model_id)
             model_url = model.file.url[1:]
-            with open(model_url) as f:
-                data = f.read()
-            model = model_from_json(data)
-            model_type = text_data_json['model_type']
-            optimizer = text_data_json['optimizer']
+            if self.model == None:    
+                if '.json' in model_url:
+                    with open(model_url) as f:
+                        data = f.read()
+                    self.model = model_from_json(data)
+                    model_type = text_data_json['model_type']
+                    optimizer = text_data_json['optimizer']
+                    self.model.compile(optimizer=optimizer, loss=model_type, metrics=['accuracy'])
+                elif '.h5' in model_url:
+                    self.model = load_model(model_url)
+            else:
+                self.model = load_model(model_url)
+            
             batch_size = int(text_data_json['batch_size'])
             epochs = int(text_data_json['epochs'])
             v_split = float(text_data_json['v_split'])
             e_stop = text_data_json['e_stop']
             patience = int(text_data_json['patience'])
 
-            model.compile(optimizer=optimizer, loss=model_type, metrics=['accuracy'])
-
             #Grab training output
             base_stdout = sys.stdout
             sys.stdout = Std_redirector(self)
         
-            model.summary()
+            self.model.summary()
             
             #Train Loop
             x = 0
             while x < epochs:
-               history = model.fit(X, Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
+               history = self.model.fit(X, Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
                x = x + 1
                for key, value in history.history.items():
                    history.history[key] = round(value[0], 2)
@@ -79,15 +81,20 @@ class TrainConsumer(WebsocketConsumer):
                self.send(text_data=json.dumps({'log': json.dumps(history.history)}))
             #set output back
             sys.stdout = base_stdout
-            
+
             #save model
-            #import h5py
+            saved_model_path = 'media/' + self.user.username + '/' + model_url.split('/')[-1].split('.')[0] + '.h5'
+            self.model.save(saved_model_path)
+            saved_model, created = Model_file.objects.get_or_create(owner=self.user, file=saved_model_path)
+            saved_model.save()
+
             
 class Std_redirector(object):
     def __init__(self, cls):
         self.cls = cls
 
     def write(self,string):
+        sleep(0.0001)
         self.cls.send(text_data=json.dumps({'output': string}))
 
     def flush(self):

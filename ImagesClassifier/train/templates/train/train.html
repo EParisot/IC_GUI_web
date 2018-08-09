@@ -9,11 +9,6 @@
 
 {# JQUERY FILE UPLOAD SCRIPTS #}
 <script src="{% static 'scripts/jquery.min.js' %}"></script>
-<script src="{% static 'scripts/jquery.ui.widget.js' %}"></script>
-<script src="{% static 'scripts/jquery.iframe-transport.js' %}"></script>
-<script src="{% static 'scripts/jquery.fileupload.js' %}"></script>
-<script src="{% static 'scripts/jszip-utils.min.js' %}"></script>
-<script src="{% static 'scripts/upload_images.js' %}"></script>
 
 
 <div id="content_div">
@@ -181,6 +176,79 @@ var logs_val_acc = []
 var logs_val_loss = []
 var epoch = 0
 
+function toggleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else{
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+	
+CanvasJS.addColorSet("customColorSet",
+ [//colorSet Array
+ "#ffff4d",
+ "#4661EE",
+ "#00cc44",
+ "#ff4d4d",
+]); 
+		
+var chart = new CanvasJS.Chart("chartContainer",
+{
+	animationEnabled: false,
+	title:{
+		text: "Training History"
+	},
+	colorSet: "customColorSet",
+	axisX: {
+		title: "Epoch",
+		valueFormatString: "#"
+	},
+	axisY: {
+		valueFormatString: "#.#"
+	},
+	legend:{
+		cursor: "pointer",
+		fontSize: 16,
+		itemclick: toggleDataSeries
+	},
+	toolTip:{
+		shared: true
+	},
+	data: [
+	{        
+		name: "Acc",
+		type: "spline",
+		yValueFormatString: "#.#",
+		showInLegend: true,
+		dataPoints: logs_acc
+	},
+	{        
+		name: "Loss",
+		type: "spline",
+		yValueFormatString: "#.#",
+		showInLegend: true,
+		dataPoints: logs_loss
+	},
+	{        
+		name: "Val_Acc",
+		type: "spline",
+		yValueFormatString: "#.#",
+		showInLegend: true,
+		dataPoints: logs_val_acc
+	},
+	{        
+		name: "Val_Loss",
+		type: "spline",
+		yValueFormatString: "#.#",
+		showInLegend: true,
+		dataPoints: logs_val_loss
+	}
+  ]
+});
+chart.render();
+
 trainSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var log = data['log'];
@@ -199,77 +267,6 @@ trainSocket.onmessage = function(e) {
 		logs_val_acc.push({x: epoch, y: logs_dict["val_acc"]});
 		logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
 
-		function toggleDataSeries(e){
-			if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-				e.dataSeries.visible = false;
-			}
-			else{
-				e.dataSeries.visible = true;
-			}
-			chart.render();
-		}
-		
-		CanvasJS.addColorSet("customColorSet",
-		 [//colorSet Array
-		 "#ffff4d",
-		 "#4661EE",
-		 "#00cc44",
-		 "#ff4d4d",
-		]); 
-		
-		var chart = new CanvasJS.Chart("chartContainer",
-		{
-			animationEnabled: true,
-			title:{
-				text: "Training History"
-			},
-			colorSet: "customColorSet",
-			axisX: {
-				title: "Epoch",
-				valueFormatString: "#"
-			},
-			axisY: {
-				valueFormatString: "#.#"
-			},
-			legend:{
-				cursor: "pointer",
-				fontSize: 16,
-				itemclick: toggleDataSeries
-			},
-			toolTip:{
-				shared: true
-			},
-			data: [
-			{        
-				name: "Acc",
-				type: "spline",
-				yValueFormatString: "#.#",
-				showInLegend: true,
-				dataPoints: logs_acc
-			},
-			{        
-				name: "Loss",
-				type: "spline",
-				yValueFormatString: "#.#",
-				showInLegend: true,
-				dataPoints: logs_loss
-			},
-			{        
-				name: "Val_Acc",
-				type: "spline",
-				yValueFormatString: "#.#",
-				showInLegend: true,
-				dataPoints: logs_val_acc
-			},
-			{        
-				name: "Val_Loss",
-				type: "spline",
-				yValueFormatString: "#.#",
-				showInLegend: true,
-				dataPoints: logs_val_loss
-			}
-		  ]
-		});
 		
 		chart.render();
 	
