@@ -84,6 +84,8 @@ class TrainConsumer(WebsocketConsumer):
 
             #save model
             saved_model_path = 'media/' + self.user.username + '/' + model_url.split('/')[-1].split('.')[0] + '.h5'
+            if os.path.exists(saved_model_path):
+                os.remove(saved_model_path)
             self.model.save(saved_model_path)
             saved_model, created = Model_file.objects.get_or_create(owner=self.user, file=saved_model_path)
             saved_model.save()
@@ -94,7 +96,6 @@ class Std_redirector(object):
         self.cls = cls
 
     def write(self,string):
-        sleep(0.0001)
         self.cls.send(text_data=json.dumps({'output': string}))
 
     def flush(self):

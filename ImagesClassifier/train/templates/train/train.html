@@ -22,26 +22,26 @@
 			</tr>
 			<tr>
 				<th>dim_1 : </th>
-				<td id="d_dim_1"> {{ photos_dim.0 }} </td>
-				<td id="m_dim_1"> {{ model_infos.1 }} </td>
+				<td id="d_dim_1">{{ photos_dim.0 }}</td>
+				<td id="m_dim_1">{{ model_infos.1 }}</td>
 				<td><img id="state_1"></img></td>
 			</tr>
 			<tr>
 				<th>dim_2 : </th>
-				<td id="d_dim_2"> {{ photos_dim.1 }} </td>
-				<td id="m_dim_2"> {{ model_infos.2 }} </td>
+				<td id="d_dim_2">{{ photos_dim.1 }}</td>
+				<td id="m_dim_2">{{ model_infos.2 }}</td>
 				<td><img id="state_2"></img></td>
 			</tr>
 			<tr>
 				<th>dim_3 : </th>
-				<td id="d_dim_3"> {{ photos_dim.2 }} </td>
-				<td id="m_dim_3"> {{ model_infos.3 }} </td>
+				<td id="d_dim_3">{{ photos_dim.2 }}</td>
+				<td id="m_dim_3">{{ model_infos.3 }}</td>
 				<td><img id="state_3"></img></td>
 			</tr>
 			<tr>
 				<th>output : </th>
-				<td id="d_out"> {{ labels_nb }} </td>
-				<td id="m_out"> {{ model_infos.0 }} </td>
+				<td id="d_out">{{ labels_nb }}</td>
+				<td id="m_out">{{ model_infos.0 }}</td>
 				<td><img id="state_out"></img></td>
 			</tr>
 			<tr>
@@ -66,8 +66,8 @@
 			<tr>
 				<td>
 					<select id="type">
-						<!--<option value="mlp">MLP</option>
-						<option value="binary_crossentropy">binary</option>-->
+						<!--<option value="mlp">MLP</option>-->
+						<option value="binary_crossentropy">binary</option>
 						<option value="categorical_crossentropy">categorical</option>
 					</select>
 				</td>
@@ -112,7 +112,7 @@
 <script>
 function check()
 {
-	if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML)
+	if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML && document.getElementById("m_dim_1").innerHTML != "")
 	{
 		document.getElementById("state_1").src = "{% static 'img/ok.png' %}";
 	}
@@ -120,7 +120,7 @@ function check()
 	{
 		document.getElementById("state_1").src = "{% static 'img/nok.png' %}";	
 	}
-	if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML)
+	if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML && document.getElementById("m_dim_2").innerHTML != "")
 	{
 		document.getElementById("state_2").src = "{% static 'img/ok.png' %}";
 	}
@@ -128,7 +128,7 @@ function check()
 	{
 		document.getElementById("state_2").src = "{% static 'img/nok.png' %}";	
 	}
-	if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML)
+	if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML && document.getElementById("m_dim_3").innerHTML != "")
 	{
 		document.getElementById("state_3").src = "{% static 'img/ok.png' %}";
 	}
@@ -136,13 +136,21 @@ function check()
 	{
 		document.getElementById("state_3").src = "{% static 'img/nok.png' %}";	
 	}
-	if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML)
+	if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML && document.getElementById("m_out").innerHTML != "")
 	{
 		document.getElementById("state_out").src = "{% static 'img/ok.png' %}";
 	}
 	else
 	{
 		document.getElementById("state_out").src = "{% static 'img/nok.png' %}";	
+	}
+	if ("{{ model_infos.4 }}" == 0)
+	{
+		document.getElementById("type").value = "binary_crossentropy"
+	}
+	else if ("{{ model_infos.4 }}" == 1)
+	{
+		document.getElementById("type").value = "categorical_crossentropy"
 	}
 }
 
@@ -165,6 +173,10 @@ var trainSocket = new WebSocket(
     'ws://' + window.location.host +
     '/ws/train');
 
+// Listen for connection errors
+trainSocket.onerror = function (e) {      
+    console.log("trainSocket Error "); 
+}
 	
 trainSocket.onclose = function(e) {
     console.error('Train socket closed unexpectedly');
@@ -249,14 +261,15 @@ var chart = new CanvasJS.Chart("chartContainer",
 });
 chart.render();
 
+var text = document.querySelector('#train-log');
 trainSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var log = data['log'];
 	var output = data['output'];
 	if (output)
 	{
-		document.querySelector('#train-log').value += output;
-		document.querySelector('#train-log').scrollTop = document.querySelector('#train-log').scrollHeight;
+		text.value += output;
+		//text.scrollTop = text.scrollHeight;
 	}
 	if (log)
 	{
@@ -266,7 +279,6 @@ trainSocket.onmessage = function(e) {
 		logs_loss.push({x: epoch, y: logs_dict["loss"]});
 		logs_val_acc.push({x: epoch, y: logs_dict["val_acc"]});
 		logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
-
 		
 		chart.render();
 	

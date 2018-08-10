@@ -245,7 +245,7 @@ function export_model()
 		dict[elem.id] = elem.dataset;
 	}
 	
-	if (elem.className == "softmax")
+	if (elem.className == "softmax" || elem.className == "sig")
 	{
 		dict = JSON.stringify(dict);
 		post_to_url('export/' + dict);
@@ -253,12 +253,12 @@ function export_model()
 	}
 	else
 	{
-		window.alert("Model should end with a softmax layer");
+		window.alert("Model should end with a softmax or sigmoid layer");
 	}
 }
 
 var w = null;
-function post_to_url(url) 
+function post_to_url(url)
 {
 	if (w)
 	{

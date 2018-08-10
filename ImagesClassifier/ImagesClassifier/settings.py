@@ -68,16 +68,6 @@ REST_FRAMEWORK = {
     )
 }
 
-##CHANNEL_LAYERS = {
-##    "default": {
-##        "BACKEND": "asgi_redis.RedisChannelLayer",
-##        "CONFIG": {
-##            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-##        },
-##        "ROUTING": "train.routing.channel_routing",
-##    },
-##}
-
 ROOT_URLCONF = 'ImagesClassifier.urls'
 
 TEMPLATES = [

@@ -21,23 +21,24 @@ def get_datas(request, get_model):
     photos = Photo.objects.filter(owner=request.user)
     photos_list = []
     labels_list = []
-    labels_nb = 1
+    labels_nb = ""
     photos_dim = []
     model_id = None
     model_infos = None
     if len(photos) > 1:
         #parse labels
         if '_' in photos[0].file.name:
+            labels_nb = 1
             labels_list.append(photos[0].file.name.split('/')[-1].split('_')[0])  
         else:
             labels_list = []
+            return render(self.request, 'train/train.html')
         for image in photos:
             if '_' in image.file.name:
                 if image.file.name.split('/')[-1].split('_')[0] not in labels_list:
                     labels_nb = labels_nb + 1
                 labels_list.append(image.file.name.split('/')[-1].split('_')[0])
             else:
-                #error if no label on pic
                 labels_list = []
                 return render(self.request, 'train/train.html')
             #open image
@@ -72,13 +73,14 @@ def get_datas(request, get_model):
                 model_dict = json.loads(data.to_json())
             
             model_infos = model_dict['config'][0]['config']['batch_input_shape']
-            if model_dict['config'][-1]['config']['activation'] == 'sigmoid':
+            if model_dict['config'][-1]['config']['activation'] == 'sigmoid' and model_dict['config'][-2]['class_name'] == "Dense" and model_dict['config'][-2]['config']['units'] == 1:
                 model_infos[0] = 2
+                model_infos.append(0)
+            elif model_dict['config'][-1]['config']['activation'] == 'softmax' and model_dict['config'][-2]['class_name'] == "Dense":
+                model_infos[0] = model_dict['config'][-2]['config']['units']
+                model_infos.append(1)
             else:
-                for layer in reversed(model_dict['config']):
-                    if layer['class_name'] == "Dense":
-                        model_infos[0] = layer['config']['units']
-                        break
+                return render(self.request, 'train/train.html')
     return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
 
 @login_required
