@@ -261,15 +261,13 @@ var chart = new CanvasJS.Chart("chartContainer",
 });
 chart.render();
 
-var text = document.querySelector('#train-log');
 trainSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var log = data['log'];
 	var output = data['output'];
 	if (output)
 	{
-		text.value += output;
-		//text.scrollTop = text.scrollHeight;
+		document.querySelector('#train-log').value += output;
 	}
 	if (log)
 	{

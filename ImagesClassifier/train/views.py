@@ -6,7 +6,6 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from model.models import Model_file
 from model.forms import ModelForm
-from keras.models import load_model
 import pandas as pd
 import numpy as np
 from PIL import Image
@@ -15,8 +14,6 @@ import random
 
 
 def get_datas(request, get_model):
-    import keras.backend as K
-    K.clear_session()
     #Query images
     photos = Photo.objects.filter(owner=request.user)
     photos_list = []
@@ -61,6 +58,9 @@ def get_datas(request, get_model):
         model_infos = []
         model_id = request.GET.get('model', None)
         if model_id != None:
+            from keras.models import load_model
+            import keras.backend as K
+            K.clear_session()
             model = Model_file.objects.get(id=model_id)
             model_url = model.file.url[1:]
             

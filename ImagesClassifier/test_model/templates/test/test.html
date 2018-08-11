@@ -4,4 +4,176 @@
 
 {% block content %}
 
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_test.css' %}" />
+
+<div id="h_actions">
+	<button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button>
+	<button id="start_but" onclick="start_cam()" disabled><img src="{% static 'img/webcam.png' %}" alt="Start"></button>
+	<button id="stop_btn" onclick="stop_cam()" disabled><img src="{% static 'img/stop.png' %}" alt="Stop"></button>
+</div>
+
+<div id="content_div">
+	<div>
+		<div id="video_div">
+			<video autoplay="true" id="videoElement"></video>
+		</div>
+	</div>
+	
+	<div id="v_actions">
+		<button id ="snap_btn" onclick="snap()" disabled><img src="{% static 'img/snap.png' %}" alt="Snap"></button>
+
+	</div>
+	
+	<div id="snaps"></div>
+</div>
+
+<script>
+var video = document.querySelector("#videoElement");
+	
+var H = window.innerHeight / 2; //screen height
+if (window.innerWidth < 768)
+{
+	var W = window.innerWidth;
+}
+else
+{
+	var W = window.innerWidth / 2; //screen width
+}
+	
+document.getElementById("video_div").style.width = W.toString()+'px';
+document.getElementById("video_div").style.height = H.toString()+'px';
+document.getElementById("snaps").style.height = H.toString()+'px';
+
+var None = null;
+	
+function import_model()
+{
+	post_to_url('import');
+}
+
+if ({{ model_id }})
+{
+	document.getElementById("start_but").disabled=false;
+}
+
+var trainSocket = new WebSocket(
+   'ws://' + window.location.host +
+   '/ws/test');
+	
+// Listen for connection errors
+trainSocket.onerror = function (e) {      
+    console.log("trainSocket Error "); 
+}
+	
+trainSocket.onclose = function(e) {
+    console.error('Train socket closed unexpectedly');
+};
+	
+function start_cam()
+{
+	if (navigator.mediaDevices.getUserMedia) 
+	{
+		navigator.mediaDevices.getUserMedia({video: { width: W, height: H }})
+		.then(function(stream)
+		{
+   			video.srcObject = stream;
+		})
+		.catch(function(err0r) {console.log("Something went wrong!");});
+		document.getElementById("stop_btn").disabled=false;
+		document.getElementById("snap_btn").disabled=false;
+	}
+}
+
+function stop_cam()
+{
+	video.pause();
+	video.srcObject = null;
+	document.getElementById("stop_btn").disabled=true;
+	document.getElementById("snap_btn").disabled=true;
+}
+
+function snap() 
+{
+	if ({{ model_id }} && {{ model_infos }})
+	{	
+		var canvas = document.createElement('canvas');
+		canvas.id = "pic" + (new Date()).getTime();
+		canvas.width = '{{ model_infos.2 }}';
+		canvas.height = '{{ model_infos.1 }}';
+		canvas.style.margin = "5px 5px 5px 5px";
+	
+		var ctx = canvas.getContext('2d');
+       	ctx.drawImage(video,0,0,canvas.width,canvas.height);
+	
+		//Send image
+		var photo = canvas.toDataURL("image/png");
+		trainSocket.send(JSON.stringify({
+			'model_id': {{ model_id }},
+			'model_infos': {{ model_infos }},
+			'photo': photo,
+		}));
+	
+		//recieve response
+		trainSocket.onmessage = function(e) {
+			var data = JSON.parse(e.data);
+			var label = data['label'];
+			
+			//append label to image
+			ctx.font = "40px Calibri";
+			ctx.fillStyle = "red";
+			ctx.fillText(label, 50, 50);
+		};
+	}
+	var canvas_div = document.getElementById("snaps");
+	canvas_div.appendChild(canvas);
+	canvas_div.scrollTop = canvas_div.scrollHeight;
+}
+
+function dataURItoBlob(dataURI) {
+	// convert base64 to raw binary data held in a string
+	// doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+	var byteString = atob(dataURI.split(',')[1]);
+	// separate out the mime component
+	var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+	// write the bytes of the string to an ArrayBuffer
+	var ab = new ArrayBuffer(byteString.length);
+	// create a view into the buffer
+	var ia = new Uint8Array(ab);
+	// set the bytes of the buffer to the correct values
+	for (var i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	}
+	// write the ArrayBuffer to a blob, and you're done
+	var blob = new Blob([ab], {type: mimeString});
+	return blob;
+}
+
+var w = null;
+function post_to_url(url) 
+{
+	if (w)
+	{
+		w.close();
+	}
+	w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
+
+	method = 'POST';
+
+	var form = w.document.createElement('form');
+	form.setAttribute('method', method);
+	form.setAttribute('action', url);
+	form.setAttribute('target', 'Popup_Window');
+	
+	var input = w.document.createElement('input');
+	input.type = 'hidden';
+	input.name = 'csrfmiddlewaretoken'
+	input.value = "{{ csrf_token }}";
+	
+	form.appendChild(input);
+	w.document.body.appendChild(form);
+	form.submit();
+	}
+</script>
+
 {% endblock %}

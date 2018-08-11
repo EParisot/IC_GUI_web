@@ -1,12 +1,19 @@
-from channels.auth import AuthMiddlewareStack
+from django.conf.urls import url
+
 from channels.routing import ProtocolTypeRouter, URLRouter
-import train.routing
+from channels.auth import AuthMiddlewareStack
+
+from train.consumers import TrainConsumer
+from test_model.consumers import TestConsumer
 
 application = ProtocolTypeRouter({
-    # (http->django views is added by default)
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            train.routing.websocket_urlpatterns
-        )
+
+    # WebSocket chat handler
+    "websocket": AuthMiddlewareStack(
+        URLRouter([
+            url(r"^ws/train$", TrainConsumer),
+            url(r"^ws/test$", TestConsumer),
+        ])
     ),
+
 })
