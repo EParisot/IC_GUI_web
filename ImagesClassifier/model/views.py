@@ -125,10 +125,6 @@ def export(request, data):
                 elif "softmax" in key:
                     model.add(Activation('softmax'))
                     
-        #model.compile(optimizer=dict_data["optimizer"], loss=dict_data["type"], metrics=['accuracy'])
-
-        model.summary()
-
         model_json = model.to_json()
 
         response = HttpResponse()

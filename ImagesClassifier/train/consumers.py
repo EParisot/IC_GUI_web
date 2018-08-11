@@ -40,8 +40,9 @@ class TrainConsumer(WebsocketConsumer):
             data_dict = get_datas(self, False)
             X = data_dict["photos"]
             X = np.array(X)
-            Y = np.array(data_dict["labels_list"])
-            
+            Y = data_dict["labels_list"]
+            Y = np.array(Y)
+
             #Prepare Model
             model = Model_file.objects.get(id=model_id)
             model_url = model.file.url[1:]

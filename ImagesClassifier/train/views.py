@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image
 import json
 import random
+import os
 
 
 def get_datas(request, get_model):
@@ -29,7 +30,7 @@ def get_datas(request, get_model):
             labels_list.append(photos[0].file.name.split('/')[-1].split('_')[0])  
         else:
             labels_list = []
-            return render(self.request, 'train/train.html')
+            #return {'photos': None, 'photos_dim': None, 'labels_list': None, 'labels_nb': None, 'model_id': None, 'model_infos': None}
         for image in photos:
             if '_' in image.file.name:
                 if image.file.name.split('/')[-1].split('_')[0] not in labels_list:
@@ -37,7 +38,7 @@ def get_datas(request, get_model):
                 labels_list.append(image.file.name.split('/')[-1].split('_')[0])
             else:
                 labels_list = []
-                return render(self.request, 'train/train.html')
+                #return {'photos': None, 'photos_dim': None, 'labels_list': None, 'labels_nb': None, 'model_id': None, 'model_infos': None}
             #open image
             image = Image.open(image.file.name)
             image = np.array(image)/255
@@ -73,14 +74,14 @@ def get_datas(request, get_model):
                 model_dict = json.loads(data.to_json())
             
             model_infos = model_dict['config'][0]['config']['batch_input_shape']
-            if model_dict['config'][-1]['config']['activation'] == 'sigmoid' and model_dict['config'][-2]['class_name'] == "Dense" and model_dict['config'][-2]['config']['units'] == 1:
-                model_infos[0] = 2
+            if model_dict['config'][-1]['config']['activation'] == 'sigmoid' and model_dict['config'][-2]['class_name'] == "Dense":
+                model_infos[0] = model_dict['config'][-2]['config']['units']
                 model_infos.append(0)
             elif model_dict['config'][-1]['config']['activation'] == 'softmax' and model_dict['config'][-2]['class_name'] == "Dense":
                 model_infos[0] = model_dict['config'][-2]['config']['units']
                 model_infos.append(1)
-            else:
-                return render(self.request, 'train/train.html')
+            #else:
+            #    return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': None, 'model_infos': None}
     return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
 
 @login_required
