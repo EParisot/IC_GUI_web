@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.http import JsonResponse
 from labels.models import Photo
@@ -104,3 +104,12 @@ class uploadView(View):
         else:
             data = {'is_valid': False}
         return JsonResponse(data)
+
+@login_required
+def delete_model(request):
+    model_id = request.GET.get('model', None)
+    model = Model_file.objects.get(owner=request.user, id=model_id)
+    model.delete()
+    os.remove(model.file.url[1:])
+    models_list = Model_file.objects.filter(owner=request.user)
+    return redirect('/train/import', {'models': models_list})

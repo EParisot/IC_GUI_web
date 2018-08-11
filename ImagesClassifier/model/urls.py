@@ -9,4 +9,5 @@ urlpatterns = [
     path('export/save/<data>/', views.save, name='save'),
     path('import', login_required(views.uploadView.as_view()), name='import'),
     path('load', views.load, name='load'),
+    path('delete/', views.delete_model, name='delete'),
 ]

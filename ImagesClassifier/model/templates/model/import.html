@@ -31,7 +31,7 @@
 
 		{# DISPLAY THE UPLOADED FILE #}
 			{% for model in models %}
-				<a onclick="load_data('{{ model.file.url }}')">{{ model.file.name }}</a><br>
+				<a onclick="load_data('{{ model.file.url }}')">{{ model.file.name }}</a><button onclick="delete_model('{{ model.id }}')"><img src="{% static 'img/pass.png' %}" alt="del"></button><br>
 			{% endfor %}
 	</div>
 </div>
@@ -314,6 +314,28 @@ function load_data(url)
 		}
 		});
 	});
+}
+
+function delete_model(id)
+{
+	post_to_url('delete/?model=' + id);
+}
+
+function post_to_url(url) 
+{
+	method = 'POST';
+	var form = document.createElement('form');
+	form.setAttribute('method', method);
+	form.setAttribute('action', url);
+		
+	var input = document.createElement('input');
+	input.type = 'hidden';
+	input.name = 'csrfmiddlewaretoken'
+	input.value = "{{ csrf_token }}";
+
+	form.appendChild(input);
+	document.body.appendChild(form);
+	form.submit('import');
 }
 </script>
 </body>
