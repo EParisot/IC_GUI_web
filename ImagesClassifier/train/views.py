@@ -6,7 +6,6 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from model.models import Model_file
 from model.forms import ModelForm
-import pandas as pd
 import numpy as np
 from PIL import Image
 import json
@@ -22,41 +21,10 @@ def get_datas(request, get_model):
     labels_nb = ""
     photos_dim = []
     model_id = None
-    model_infos = None
-    if len(photos) > 1:
-        #parse labels
-        if '_' in photos[0].file.name:
-            labels_nb = 1
-            labels_list.append(photos[0].file.name.split('/')[-1].split('_')[0])  
-        else:
-            labels_list = []
-            #return {'photos': None, 'photos_dim': None, 'labels_list': None, 'labels_nb': None, 'model_id': None, 'model_infos': None}
-        for image in photos:
-            if '_' in image.file.name:
-                if image.file.name.split('/')[-1].split('_')[0] not in labels_list:
-                    labels_nb = labels_nb + 1
-                labels_list.append(image.file.name.split('/')[-1].split('_')[0])
-            else:
-                labels_list = []
-                #return {'photos': None, 'photos_dim': None, 'labels_list': None, 'labels_nb': None, 'model_id': None, 'model_infos': None}
-            #open image
-            image = Image.open(image.file.name)
-            image = np.array(image)/255
-            if image.shape[2] == 4:
-                photos_list.append(image[...,:3])
-            elif image.shape[2] == 2:
-                photos_list.append(image[...,:1])
-            elif image.shape[2] == 3 or image.shape[2] == 1:
-                photos_list.append(image)
-        labels_list = np.array(pd.get_dummies(labels_list))
-        photos_dim = photos_list[0].shape
-        # Shuffle images and labels
-        zipped_list = list(zip(photos_list, labels_list))
-        random.shuffle(zipped_list)
-        photos_list, labels_list = zip(*zipped_list)
+    model_infos = []
+
     #parse model
     if get_model == True:
-        model_infos = []
         model_id = request.GET.get('model', None)
         if model_id != None:
             from keras.models import load_model
@@ -74,14 +42,44 @@ def get_datas(request, get_model):
                 model_dict = json.loads(data.to_json())
             
             model_infos = model_dict['config'][0]['config']['batch_input_shape']
-            if model_dict['config'][-1]['config']['activation'] == 'sigmoid' and model_dict['config'][-2]['class_name'] == "Dense":
-                model_infos[0] = model_dict['config'][-2]['config']['units']
+            if model_dict['config'][-1]['config']['activation'] == 'sigmoid' and model_dict['config'][-2]['class_name'] == "Dense" and model_dict['config'][-2]['config']['units'] == 1:
+                model_infos[0] = 2
                 model_infos.append(0)
             elif model_dict['config'][-1]['config']['activation'] == 'softmax' and model_dict['config'][-2]['class_name'] == "Dense":
                 model_infos[0] = model_dict['config'][-2]['config']['units']
                 model_infos.append(1)
-            #else:
-            #    return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': None, 'model_infos': None}
+            else:
+                model_infos = []
+
+    #parse labels
+    if len(photos) > 1:
+        if '_' in photos[0].file.name:
+            labels_nb = 1
+            labels_list.append(photos[0].file.name.split('/')[-1].split('_')[0])  
+        else:
+            labels_list = []
+        for image in photos:
+            if '_' in image.file.name:
+                if image.file.name.split('/')[-1].split('_')[0] not in labels_list:
+                    labels_nb = labels_nb + 1
+                labels_list.append(image.file.name.split('/')[-1].split('_')[0])
+            else:
+                labels_list = []
+            #open image
+            image = Image.open(image.file.name)
+            image = np.array(image)/255
+            if image.shape[2] == 4:
+                photos_list.append(image[...,:3])
+            elif image.shape[2] == 2:
+                photos_list.append(image[...,:1])
+            elif image.shape[2] == 3 or image.shape[2] == 1:
+                photos_list.append(image)
+        photos_dim = photos_list[0].shape
+        # Shuffle images and labels
+        zipped_list = list(zip(photos_list, labels_list))
+        random.shuffle(zipped_list)
+        photos_list, labels_list = zip(*zipped_list)
+
     return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
 
 @login_required

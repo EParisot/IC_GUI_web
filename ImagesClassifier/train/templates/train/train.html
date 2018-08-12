@@ -112,13 +112,15 @@
 <script>
 function check()
 {
+	var ret = 1;
 	if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML && document.getElementById("m_dim_1").innerHTML != "")
 	{
 		document.getElementById("state_1").src = "{% static 'img/ok.png' %}";
 	}
 	else
 	{
-		document.getElementById("state_1").src = "{% static 'img/nok.png' %}";	
+		document.getElementById("state_1").src = "{% static 'img/nok.png' %}";
+		ret = 0;
 	}
 	if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML && document.getElementById("m_dim_2").innerHTML != "")
 	{
@@ -126,7 +128,8 @@ function check()
 	}
 	else
 	{
-		document.getElementById("state_2").src = "{% static 'img/nok.png' %}";	
+		document.getElementById("state_2").src = "{% static 'img/nok.png' %}";
+		ret = 0;		
 	}
 	if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML && document.getElementById("m_dim_3").innerHTML != "")
 	{
@@ -134,7 +137,8 @@ function check()
 	}
 	else
 	{
-		document.getElementById("state_3").src = "{% static 'img/nok.png' %}";	
+		document.getElementById("state_3").src = "{% static 'img/nok.png' %}";
+		ret = 0;
 	}
 	if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML && document.getElementById("m_out").innerHTML != "")
 	{
@@ -142,7 +146,8 @@ function check()
 	}
 	else
 	{
-		document.getElementById("state_out").src = "{% static 'img/nok.png' %}";	
+		document.getElementById("state_out").src = "{% static 'img/nok.png' %}";
+		ret = 0;
 	}
 	if ("{{ model_infos.4 }}" == 0)
 	{
@@ -152,6 +157,7 @@ function check()
 	{
 		document.getElementById("type").value = "categorical_crossentropy"
 	}
+	return ret;
 }
 
 if (window.addEventListener) {
@@ -286,7 +292,7 @@ trainSocket.onmessage = function(e) {
 var None = null
 function train()
 {
-	if ({{ model_id }})
+	if ({{ model_id }} && check() == 1)
 	{
 		trainSocket.send(JSON.stringify({
 				'model_id': {{ model_id }},

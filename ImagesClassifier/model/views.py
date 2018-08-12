@@ -92,6 +92,7 @@ def export(request, data):
                 pass
             elif 'sig' in key:
                 pass
+        
 
         from  keras.models import Sequential
         from keras.layers import Input, Conv2D, Dense, Flatten, Dropout, Activation, MaxPooling2D
@@ -106,8 +107,8 @@ def export(request, data):
             if (key != "type" and key != "optimizer"):
                 if key == "conv2d_1":
                     model.add(Conv2D(input_shape=input_shape, filters=dict_data[key]["filters"], kernel_size=(dict_data[key]["kernel_h"], dict_data[key]["kernel_w"]), strides=(dict_data[key]["stride_y"], dict_data[key]["stride_x"]), padding=dict_data[key]["padding"]))
-                #elif key == "dense_1":
-                #    model.add(Dense(input_shape=input_shape, units=dict_data[key]["neurons"]))
+                elif key == "dense_1":
+                    model.add(Dense(input_shape=input_shape, units=dict_data[key]["neurons"]))
                 elif "conv2d" in key and key != "conv2d_1":
                     model.add(Conv2D(filters=dict_data[key]["filters"], kernel_size=(dict_data[key]["kernel_h"], dict_data[key]["kernel_w"]), strides=(dict_data[key]["stride_y"], dict_data[key]["stride_x"]), padding=dict_data[key]["padding"]))
                 elif "dense" in key and key != "dense_1":

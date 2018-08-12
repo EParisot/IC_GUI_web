@@ -33,15 +33,11 @@ class TrainConsumer(WebsocketConsumer):
             from keras.models import model_from_json
             from keras.models import load_model
             import numpy as np
+            import pandas as pd
             import h5py
-            
-            #Prepare X Y
+
             self.user = self.scope["user"]
             data_dict = get_datas(self, False)
-            X = data_dict["photos"]
-            X = np.array(X)
-            Y = data_dict["labels_list"]
-            Y = np.array(Y)
 
             #Prepare Model
             model = Model_file.objects.get(id=model_id)
@@ -64,6 +60,14 @@ class TrainConsumer(WebsocketConsumer):
             v_split = float(text_data_json['v_split'])
             e_stop = text_data_json['e_stop']
             patience = int(text_data_json['patience'])
+
+            #Prepare X Y
+            X = data_dict["photos"]
+            X = np.array(X)
+            Y = data_dict["labels_list"]
+            if model_type == 'categorical_crossentropy':
+                Y = pd.get_dummies(Y)
+            Y = np.array(Y)
 
             #Grab training output
             base_stdout = sys.stdout
