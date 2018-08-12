@@ -103,12 +103,10 @@
 <div id="content_div">
 	<textarea id="train-log" cols="100" rows="16"></textarea><br/>
 
-
 	<div id="chartContainer" style="height: 300px; width: 100%;"></div>
 		<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-	</div>
-	
 </div>
+
 <script>
 function check()
 {
@@ -271,6 +269,7 @@ trainSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var log = data['log'];
 	var output = data['output'];
+	var res = data["res"];
 	if (output)
 	{
 		document.querySelector('#train-log').value += output;
@@ -285,7 +284,13 @@ trainSocket.onmessage = function(e) {
 		logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
 		
 		chart.render();
-	
+	}
+	if (res)
+	{
+		if (window.confirm("Training done, \nSave model ?"))
+		{
+			window.location.pathname = res;
+		}
 	}
 };
 

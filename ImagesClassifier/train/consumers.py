@@ -4,7 +4,6 @@ from train.views import get_datas
 import json
 import sys
 import os
-from time import sleep
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
@@ -95,6 +94,7 @@ class TrainConsumer(WebsocketConsumer):
             saved_model, created = Model_file.objects.get_or_create(owner=self.user, file=saved_model_path)
             saved_model.save()
 
+            self.send(text_data=json.dumps({'res': saved_model_path}))
             
 class Std_redirector(object):
     def __init__(self, cls):
