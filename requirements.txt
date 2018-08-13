@@ -1,5 +1,5 @@
 Django
-mysqlclient
+
 djangorestframework
 djangorestframework-jwt
 channels
