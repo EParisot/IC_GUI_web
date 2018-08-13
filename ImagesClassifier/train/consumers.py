@@ -85,12 +85,16 @@ class TrainConsumer(WebsocketConsumer):
             #Train Loop
             x = 0
             while x < epochs:
-               history = self.model.fit(self.X, self.Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
-               x = x + 1
-               for key, value in history.history.items():
-                   history.history[key] = round(value[0], 2)
-               #output to logs
-               self.send(text_data=json.dumps({'log': json.dumps(history.history)}))
+                try:
+                    history = self.model.fit(self.X, self.Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
+                except Exception as e:
+                    self.send(text_data=json.dumps({'error': str(e)}))
+                    return
+                x = x + 1
+                for key, value in history.history.items():
+                    history.history[key] = round(value[0], 2)
+                #output to logs
+                self.send(text_data=json.dumps({'log': json.dumps(history.history)}))
             #set output back
             sys.stdout = base_stdout
 
