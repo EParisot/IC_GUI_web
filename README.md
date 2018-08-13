@@ -5,17 +5,16 @@ Images Classifier GUI web
 ```
 - Project
       - Apps
-          - static
-                css
-                img
-                scripts
           - templates
                 html (base.html in main app, contents in other apps)
           - python views, urls, models, ...
       - media
           - user
               - files
-
+      - static
+            css
+            img
+            scripts
 ```
 
 ## Installation:
@@ -40,6 +39,11 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+//create superuser
+```
+python manage.py createsuperuser
+```
+
 //run project
 ```
 python manage.py runserver
@@ -47,3 +51,4 @@ python manage.py runserver
 
 and go to 127.0.0.1:8000...
 
+(to use another IP address, simply add it to ALLOWED_HOSTS in settings.py and run ```python manage.py runserver myOtherIP```)
