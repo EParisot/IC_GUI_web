@@ -9,16 +9,18 @@ class TrainConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
         self.user = self.scope["user"]
-        import keras.backend as K
-        K.clear_session()
         self.model = None
+        self.model_id = None
+        self.X = []
+        self.Y = []
 
     def disconnect(self, close_code):
         pass
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        model_id = text_data_json['model_id']
+        if self.model_id == None:
+            self.model_id = text_data_json['model_id']
         model_type = None
         optimizer = None
         batch_size = None
@@ -26,7 +28,7 @@ class TrainConsumer(WebsocketConsumer):
         v_split = None
         e_stop = None
         patience = None
-        if model_id != None:
+        if self.model_id != None:
             from  keras.models import Sequential
             from keras.layers import Input, Conv2D, Dense, Flatten, Dropout, Activation, MaxPooling2D
             from keras.models import model_from_json
@@ -34,25 +36,30 @@ class TrainConsumer(WebsocketConsumer):
             import numpy as np
             import pandas as pd
             import h5py
-
+            import keras.backend as K
+            K.clear_session()
             self.user = self.scope["user"]
             data_dict = get_datas(self, False)
 
             #Prepare Model
-            model = Model_file.objects.get(id=model_id)
-            model_url = model.file.url[1:]
-            if self.model == None:    
-                if '.json' in model_url:
-                    with open(model_url) as f:
-                        data = f.read()
-                    self.model = model_from_json(data)
-                    model_type = text_data_json['model_type']
-                    optimizer = text_data_json['optimizer']
-                    self.model.compile(optimizer=optimizer, loss=model_type, metrics=['accuracy'])
-                elif '.h5' in model_url:
+            model = Model_file.objects.filter(id=self.model_id)
+            if len(model) > 0:
+                model_url = model[0].file.url[1:]
+                if self.model == None:    
+                    if '.json' in model_url:
+                        with open(model_url) as f:
+                            data = f.read()
+                        self.model = model_from_json(data)
+                        model_type = text_data_json['model_type']
+                        optimizer = text_data_json['optimizer']
+                        self.model.compile(optimizer=optimizer, loss=model_type, metrics=['accuracy'])
+                    elif '.h5' in model_url:
+                        self.model = load_model(model_url)
+                else:
                     self.model = load_model(model_url)
             else:
-                self.model = load_model(model_url)
+                self.send(text_data=json.dumps({'error': 'Reload Model'}))
+                return
             
             batch_size = int(text_data_json['batch_size'])
             epochs = int(text_data_json['epochs'])
@@ -61,12 +68,13 @@ class TrainConsumer(WebsocketConsumer):
             patience = int(text_data_json['patience'])
 
             #Prepare X Y
-            X = data_dict["photos"]
-            X = np.array(X)
-            Y = data_dict["labels_list"]
-            if model_type == 'categorical_crossentropy':
-                Y = pd.get_dummies(Y)
-            Y = np.array(Y)
+            if len(self.X) == 0 or len(self.Y) == 0:
+                self.X = data_dict["photos"]
+                self.X = np.array(self.X)
+                self.Y = data_dict["labels_list"]
+                if model_type == 'categorical_crossentropy':
+                    self.Y = pd.get_dummies(self.Y)
+                self.Y = np.array(self.Y)
 
             #Grab training output
             base_stdout = sys.stdout
@@ -77,7 +85,7 @@ class TrainConsumer(WebsocketConsumer):
             #Train Loop
             x = 0
             while x < epochs:
-               history = self.model.fit(X, Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
+               history = self.model.fit(self.X, self.Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
                x = x + 1
                for key, value in history.history.items():
                    history.history[key] = round(value[0], 2)
@@ -93,6 +101,7 @@ class TrainConsumer(WebsocketConsumer):
             self.model.save(saved_model_path)
             saved_model, created = Model_file.objects.get_or_create(owner=self.user, file=saved_model_path)
             saved_model.save()
+            self.model_id = saved_model.id
 
             self.send(text_data=json.dumps({'res': saved_model_path}))
             

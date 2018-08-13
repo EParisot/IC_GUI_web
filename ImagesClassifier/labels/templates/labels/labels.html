@@ -20,6 +20,10 @@
 {# PHOTOS PAGE SCRIPTS #}
 <script type="text/javascript" src="http://stuk.github.io/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="http://stuk.github.io/jszip/vendor/FileSaver.js"></script>
+{# CROPPER #}
+<script src="{% static 'scripts/jquery.Jcrop.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'scripts/jquery.Jcrop.css' %}" type="text/css" />
+
 
 {# BUTTON TO TRIGGER THE ACTION #}
 <button type="button" class="btn btn-primary js-upload-photos" style="margin: 10px 10px 10px 10px;">
@@ -63,6 +67,7 @@
 </div>
 <br><br>
 <div id="h_actions">
+	<button onclick="crop_all()"><img src="{% static 'img/crop.png' %}" alt="Crop"></button>
 	<button onclick="del()"><img src="{% static 'img/del.png' %}" alt="Del"></button>
 	<button onclick="save()"><img src="{% static 'img/save.png' %}" alt="Save"></button>
 </div>
@@ -123,22 +128,57 @@
 		}());
 	}
 	
+	var cropping;
+
+	function crop(c)
+	{
+		delete c.w;
+		delete c.h;
+		cropping = c;
+	};
+	
+	function crop_all()
+	{
+		if (cropping)
+		{
+			post_to_url('crop/' + JSON.stringify(cropping));
+		}
+		else
+		{
+			window.alert("No Data to Crop...");
+		}
+		
+	}
+	
 	function show_pic(url, alt)
 	{
+		var el = document.getElementById('pic_div');
+		
 		var img = document.createElement("IMG");
 		img.src = url;
 		img.alt = url;
-		img.height = H;
-		img.width = W;
-		if (document.getElementById('pic_div').childElementCount!=0)
+
+		if (el.childElementCount!=0)
 		{
-			document.getElementById('pic_div').innerHTML = "";
+			el.innerHTML = "";
 		}
-		document.getElementById('pic_div').appendChild(img);
+		el.appendChild(img);
+
+		jQuery(function($) {
+			$(img).Jcrop(
+				{
+					setSelect:   [ 0, 0, W, H ],
+					onSelect: crop,
+					onChange: crop
+				}
+			);
+		});
+		
 		var label = document.createElement("p");
 		label.id = "pic_p";
 		label.innerHTML = alt;
-		document.getElementById('pic_div').appendChild(label);
+		el.appendChild(label);
+		
 	}
 	
 	window.addEventListener('keydown',this.keyHandler,false);
@@ -209,6 +249,7 @@
 			return false;
 		}
 	}
+
 	
 	function rename(label, old)
 	{
@@ -229,7 +270,7 @@
 	}
 	
 	function del() 
-	{
+	{	
 		var img_list = document.getElementById('gallery').querySelectorAll('a');
 		var sel = false;
 		var i;
@@ -244,26 +285,28 @@
 		
 		if (sel == true)
 		{
-			for (i = 0; i < img_list.length; ++i) 
-			{
-				if (img_list[i].selected==true)
+			if (confirm("Remove selected picture ?")) {
+				for (i = 0; i < img_list.length; ++i) 
 				{
-					img_list[i].parentNode.removeChild(img_list[i]);
-					document.getElementById('pic_div').innerHTML = "";
-					post_to_url('/labels/delete/' + img_list[i].firstChild.alt)
-					
-
+					if (img_list[i].selected==true)
+					{
+						img_list[i].parentNode.removeChild(img_list[i]);
+						document.getElementById('pic_div').innerHTML = "";
+						post_to_url('/labels/delete/' + img_list[i].firstChild.alt)
+					}
 				}
 			}
 		}
 		else
 		{
-			for (i = 0; i < img_list.length; ++i) 
-			{
-				img_list[i].parentNode.removeChild(img_list[i]);
-				document.getElementById('pic_div').innerHTML = "";
+			if (confirm("Remove all pictures ?")) {
+				for (i = 0; i < img_list.length; ++i) 
+				{
+					img_list[i].parentNode.removeChild(img_list[i]);
+					document.getElementById('pic_div').innerHTML = "";
+				}
+				post_to_url('/labels/delete_all')
 			}
-			post_to_url('/labels/delete_all')
 		}
 	}
 	

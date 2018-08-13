@@ -270,6 +270,7 @@ trainSocket.onmessage = function(e) {
     var log = data['log'];
 	var output = data['output'];
 	var res = data["res"];
+	var err = data["error"];
 	if (output)
 	{
 		document.querySelector('#train-log').value += output;
@@ -291,6 +292,10 @@ trainSocket.onmessage = function(e) {
 		{
 			window.location.pathname = res;
 		}
+	}
+	if (err)
+	{
+		window.alert("Please Reload your model...");
 	}
 };
 
