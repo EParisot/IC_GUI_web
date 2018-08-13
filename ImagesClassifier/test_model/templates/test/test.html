@@ -11,6 +11,10 @@
 	<button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button>
 	<button id="start_but" onclick="start_cam()" disabled><img src="{% static 'img/webcam.png' %}" alt="Start"></button>
 	<button id="stop_btn" onclick="stop_cam()" disabled><img src="{% static 'img/stop.png' %}" alt="Stop"></button>
+	<p style="margin : 10px;">W : </p>
+	<input id="w_input" type='text' style="text-align: center;"></input>
+	<p style="margin : 10px;">H : </p>
+	<input id="h_input" type='text' style="text-align: center;"></input>
 </div>
 
 <div id="content_div">
@@ -44,6 +48,8 @@ else
 document.getElementById("video_div").style.width = W.toString()+'px';
 document.getElementById("video_div").style.height = H.toString()+'px';
 document.getElementById("snaps").style.height = H.toString()+'px';
+document.getElementById("w_input").value = '{{ model_infos.2 }}';
+document.getElementById("h_input").value = '{{ model_infos.1 }}';
 
 var None = null;
 	
@@ -72,9 +78,9 @@ trainSocket.onclose = function(e) {
 	
 function start_cam()
 {
-	if (navigator.mediaDevices.getUserMedia) 
+	if (navigator.mediaDevices.getUserMedia && document.getElementById("w_input").value <= W && document.getElementById("h_input").value <= H) 
 	{
-		navigator.mediaDevices.getUserMedia({video: { width: W, height: H }})
+		navigator.mediaDevices.getUserMedia({video: { width: document.getElementById("w_input").value, height: document.getElementById("h_input").value }})
 		.then(function(stream)
 		{
    			video.srcObject = stream;
