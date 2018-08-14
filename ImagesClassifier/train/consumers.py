@@ -84,9 +84,19 @@ class TrainConsumer(WebsocketConsumer):
             
             #Train Loop
             x = 0
+            last_loss = 0
+            counter = 0
             while x < epochs:
                 try:
                     history = self.model.fit(self.X, self.Y, batch_size=batch_size, epochs=1, validation_split=v_split, verbose=1)
+                    #Early stop
+                    if e_stop == "on":
+                        if history.history["val_loss"][0] > last_loss + (last_loss * 0.1) or history.history["val_loss"][0] < last_loss - (last_loss * 0.1):
+                            counter = 0
+                        else:
+                            counter = counter + 1
+                        if counter == patience:
+                            break
                 except Exception as e:
                     self.send(text_data=json.dumps({'error': str(e)}))
                     return

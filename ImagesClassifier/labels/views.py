@@ -38,7 +38,10 @@ def rename(request, user, old, label):
         old_file.title = new_name
         old_file.file.name = new_name
         old_file.save()
-        os.rename(old_name, new_name)
+        try:
+            os.rename(old_name, new_name)
+        except:
+            pass
         photos_list = Photo.objects.all()
         return render(request, 'labels/labels.html', {'photos': photos_list, 'sel': new_name})
     photos_list = Photo.objects.filter(owner=request.user)
@@ -63,8 +66,13 @@ def crop(request, crop_data):
 def delete(request, user, title):
     if request.method == 'POST':
         title = 'media/' + request.user.username + '/' + title
-        Photo.objects.get(file=title).delete()
-        os.remove(title);
+        elem_list = Photo.objects.filter(file=title)
+        for elem in elem_list:
+            elem.delete()
+            try:
+                os.remove(elem.title);
+            except:
+                pass
     photos_list = Photo.objects.filter(owner=request.user)
     return render(request, 'labels/labels.html', {'photos': photos_list})
 
