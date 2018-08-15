@@ -11,6 +11,8 @@ Machine Learning Images Classification in Graphical User Interface
 
 ### Without any line of code, on any device !
 
+![Alt text](/screenshot_model.bmp?raw=true "Model")
+
 ![Alt text](/screenshot_IC_GUI.bmp?raw=true "Training")
 
 ## Installation:
