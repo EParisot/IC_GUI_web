@@ -66,7 +66,7 @@
 	<div id="pic_div"></div>
 </div>
 
-<div id="count_div"><h1 id="cur"></h1><h1>{{ photos|length }} pics</h1></div>
+<div id="count_div"><h1 id="cur"></h1><h1 id="count_h1">{{ photos|length }} pics</h1></div>
 
 <div id="h_commands">
 	<div id="h_actions">
@@ -337,11 +337,12 @@
 		var new_name = data['new'];
 		var label = data['label'];
 		var err = data['err'];
+		var count = data['count'];
 		if (err)
 		{
 			window.alert(err);
 		}
-		else
+		else if (label)
 		{
 			var  j = 0;
 			var img_list = document.getElementById('gallery').querySelectorAll('a');
@@ -357,12 +358,14 @@
 				document.getElementById("pic_p").innerHTML = "Label : " + label;
 			}
 		}
+		if (count)
+		{
+			document.getElementById("count_h1").innerHTML = count + ' pics';
+		}
 	}
 
 	function rename(label, old)
 	{
-		//var url = '/labels/rename/' + old + '/' + label;
-		//post_to_url(url);
 		labelsSocket.send(JSON.stringify({
 				'old': old,
 				'label': label,
@@ -389,7 +392,7 @@
 		
 		for (i = 0; i < img_list.length; ++i) 
 		{
-			if (img_list[i].selected==true)
+			if (img_list[i].selected == true)
 			{
 				sel = true;
 			}
@@ -402,10 +405,21 @@
 				{
 					if (img_list[i].selected==true)
 					{
+						labelsSocket.send(JSON.stringify({
+							'old': img_list[i].firstChild.alt,
+							'label': "null",
+							}));
 						img_list[i].parentNode.removeChild(img_list[i]);
 						document.getElementById('pic_div').innerHTML = "";
-						post_to_url('/labels/delete/' + img_list[i].firstChild.alt)
+						document.getElementById('cur').innerHTML = "";
+						break;
 					}
+				}
+				i++;
+				if (img_list[i])
+				{
+					img_list[i].selected = true;
+					img_list[i].style.outline="4px solid red";
 				}
 			}
 		}
