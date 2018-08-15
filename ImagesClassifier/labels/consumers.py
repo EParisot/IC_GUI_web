@@ -21,22 +21,23 @@ class LabelsConsumer(WebsocketConsumer):
         #rename
         if label != 'null':
             old_file = Photo.objects.filter(owner=self.user, file=old)
-            if len(old_file) > 0:
+            if len(old_file) == 1:
                 old_name = old_file[0].file.name
                 new_name = label + '_' + old_name.split('/')[-1].split('_')[-1]
                 new_name = 'media/' + self.user.username + '/' + new_name
-                old_file.title = new_name
-                old_file[0].file.name = new_name
-                old_file[0].save()
-                try:
-                    if len(old_file) > 1:
-                        i = 1
-                        while i < len(old_file):
-                            os.remove(old_file[i].file.name)
-                            i = i + 1
-                    os.rename(old_name, new_name)
-                except Exception as e:
-                    err = str(e)
+                test_query = Photo.objects.filter(owner=self.user, file=new_name)
+                if len(test_query) == 0:
+                    old_file.title = new_name
+                    old_file[0].file.name = new_name
+                    old_file[0].save()
+                    try:
+                        os.rename(old_name, new_name)
+                    except Exception as e:
+                        err = str(e)
+                else:
+                    err = "This file already exists with the label you provided, \nconsider about removing it..."
+            elif len(old_file) > 1:
+                err = "This file is duplicated, \nconsider about removing it..."
             self.send(text_data=json.dumps({'old': old, 'new': new_name, 'label': label, 'count': None, 'err': err}))
         #delete
         else:
