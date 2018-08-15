@@ -152,36 +152,42 @@
 	
 	function crop_all()
 	{
-		if (window.confirm("Crop all pictures with selected size ?"))
+		if (document.getElementById("pic_div").innerHTML != "" && document.getElementById("zoom_pic").alt == "zoom-in")
 		{
-			if (cropping)
+			if (window.confirm("Crop all pictures with selected size ?"))
 			{
-				post_to_url('crop/' + JSON.stringify(cropping));
-			}
-			else
-			{
-				window.alert("No Data to Crop...");
+				if (cropping)
+				{
+					post_to_url('crop/' + JSON.stringify(cropping));
+				}
+				else
+				{
+					window.alert("No Data to Crop...");
+				}
 			}
 		}
 	}
 	
 	function zoom()
 	{
-		if (document.getElementById("zoom_pic").alt == "zoom-in")
+		if (document.getElementById("pic_div").innerHTML != "")
 		{
-			document.getElementById("zoom_pic").src = "{% static 'img/zoom-out.png' %}";
-			document.getElementById("zoom_pic").alt = "zoom-out";
-			show_pic(document.getElementById("image_elem").src, document.getElementById("image_elem").src);
-			document.getElementById("crop_pic").src = "{% static 'img/crop-nok.png' %}";
-			document.getElementById("crop_but").disabled = true;
-		}
-		else
-		{
-			document.getElementById("zoom_pic").src = "{% static 'img/zoom-in.png' %}";
-			document.getElementById("zoom_pic").alt = "zoom-in";
-			show_pic(document.getElementById("image_elem").src, "");
-			document.getElementById("crop_pic").src = "{% static 'img/crop.png' %}";
-			document.getElementById("crop_but").disabled = false;
+			if (document.getElementById("zoom_pic").alt == "zoom-in")
+			{
+				document.getElementById("zoom_pic").src = "{% static 'img/zoom-out.png' %}";
+				document.getElementById("zoom_pic").alt = "zoom-out";
+				show_pic(document.getElementById("image_elem").src, document.getElementById("image_elem").src);
+				document.getElementById("crop_pic").src = "{% static 'img/crop-nok.png' %}";
+				document.getElementById("crop_but").disabled = true;
+			}
+			else
+			{
+				document.getElementById("zoom_pic").src = "{% static 'img/zoom-in.png' %}";
+				document.getElementById("zoom_pic").alt = "zoom-in";
+				show_pic(document.getElementById("image_elem").src, document.getElementById("image_elem").alt);
+				document.getElementById("crop_pic").src = "{% static 'img/crop.png' %}";
+				document.getElementById("crop_but").disabled = false;
+			}
 		}
 	}
 	
