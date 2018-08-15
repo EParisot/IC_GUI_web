@@ -230,6 +230,13 @@
 		cleaned_label = alt_tab[i].split("_")[0];
 		label.innerHTML = "Label : " + cleaned_label;
 		el.appendChild(label);
+		var j = 0;
+		var img_list = document.getElementById('gallery').querySelectorAll('a');
+		while (img_list[j] && img_list[j].selected == false)
+		{
+			j++;
+		}
+		document.getElementById("cur").innerHTML = (j + 1).toString() + ' / ';
 		
 	}
 	
@@ -294,9 +301,13 @@
 		}
 		else if (document.getElementById("pic_div").childElementCount!=0)
 		{
-			if (document.getElementById('pic_div').childElementCount!=0 && (isAlpha(e.key) || isNum(e.key)))
+			if (isAlpha(e.key) || isNum(e.key))
 			{
 				rename(e.key, img_list[j].firstChild.alt);
+			}
+			else if (e.key == "Delete")
+			{
+				del();
 			}
 		}
 	}
@@ -420,6 +431,7 @@
 				{
 					img_list[i].selected = true;
 					img_list[i].style.outline="4px solid red";
+					show_pic(img_list[i].firstChild.src, img_list[i].firstChild.alt);
 				}
 			}
 		}

@@ -48,6 +48,9 @@ def delete_all(request):
     if request.method == 'POST':
         photos_list = Photo.objects.filter(owner=request.user)
         for item in photos_list:
-            os.remove(item.file.name);
+            try:
+                os.remove(item.file.name);
+            except:
+                pass
         photos_list.delete()
     return redirect('/labels/')
