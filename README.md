@@ -1,21 +1,15 @@
 # IC_GUI_web
-Images Classifier GUI web
 
-## Architecture:
-```
-- Project
-      - Apps
-          - templates
-                html (base.html in main app, contents in other apps)
-          - python views, urls, models, ...
-      - media
-          - user
-              - files
-      - static
-            css
-            img
-            scripts
-```
+Machine Learning Images Classification in Graphical User Interface
+* Take pictures
+* Labelize them
+* Define a Model Design
+* Train your model 
+* Test your model
+
+### Without any line of code, on any device !
+
+![Alt text](/screenshot_IC_GUI.bmp?raw=true "Training")
 
 ## Installation:
 
