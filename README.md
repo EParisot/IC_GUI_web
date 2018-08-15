@@ -47,6 +47,8 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-and go to 127.0.0.1:8000...
+and go to 127.0.0.1:8000 to test it localy
 
-(to use another IP address, simply add it to ALLOWED_HOSTS in settings.py and run ```python manage.py runserver myOtherIP```)
+To use another IP address and serve IC_GUI on your network, simply add it to ALLOWED_HOSTS in settings.py and run ```python manage.py runserver IP```
+
+Enjoy it !
