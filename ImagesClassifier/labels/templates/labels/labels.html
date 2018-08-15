@@ -79,6 +79,8 @@
 	</div>
 </div>
 <script>
+	var None = null;
+	
 	//Set Sizes
 	var H = window.innerHeight / 2;
 	if (window.innerWidth < 768)
@@ -316,14 +318,58 @@
 		}
 	}
 
+	var labelsSocket = new WebSocket(
+		'ws://' + window.location.host +
+		'/ws/labels');
+
+	// Listen for connection errors
+	labelsSocket.onerror = function (e) {      
+		console.log("labels Socket Error "); 
+	}
 	
+	labelsSocket.onclose = function(e) {
+		console.error('Labels socket closed unexpectedly');
+	};
+	
+	labelsSocket.onmessage = function(e) {
+		var data = JSON.parse(e.data);
+		var old = data['old'];
+		var new_name = data['new'];
+		var label = data['label'];
+		var err = data['err'];
+		if (err)
+		{
+			window.alert(err);
+		}
+		else
+		{
+			var  j = 0;
+			var img_list = document.getElementById('gallery').querySelectorAll('a');
+			while (img_list[j] && img_list[j].firstChild.alt != old)
+			{
+				j++;
+			}
+			if (j < img_list.length)
+			{
+				img_list[j].firstChild.setAttribute("src", "/" + new_name);
+				img_list[j].firstChild.setAttribute("alt", new_name);
+				img_list[j].setAttribute("onclick", "show_pic('/" + new_name + "', '" + new_name + "')");
+				document.getElementById("pic_p").innerHTML = "Label : " + label;
+			}
+		}
+	}
+
 	function rename(label, old)
 	{
-		var url = '/labels/rename/' + old + '/' + label;
-		post_to_url(url);
+		//var url = '/labels/rename/' + old + '/' + label;
+		//post_to_url(url);
+		labelsSocket.send(JSON.stringify({
+				'old': old,
+				'label': label,
+			}));
 		
-		var j = 0;
-		var img_list = document.getElementById('gallery').querySelectorAll('a'), j;
+		var  j = 0;
+		var img_list = document.getElementById('gallery').querySelectorAll('a');
 		while (img_list[j] && img_list[j].firstChild.alt != old)
 		{
 			j++;

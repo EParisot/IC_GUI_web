@@ -28,24 +28,24 @@ class uploadView(View):
             data = {'is_valid': False}
         return JsonResponse(data)
 
-@login_required
-def rename(request, user, old, label):
-    if request.method == 'POST':
-        old_file = Photo.objects.get(file='media/' + request.user.username + '/' + old)
-        old_name = old_file.file.name
-        new_name = label + '_' + old_name.split('/')[-1].split('_')[-1]
-        new_name = 'media/' + user + '/' + new_name
-        old_file.title = new_name
-        old_file.file.name = new_name
-        old_file.save()
-        try:
-            os.rename(old_name, new_name)
-        except:
-            pass
-        photos_list = Photo.objects.all()
-        return render(request, 'labels/labels.html', {'photos': photos_list, 'sel': new_name})
-    photos_list = Photo.objects.filter(owner=request.user)
-    return render(request, 'labels/labels.html', {'photos': photos_list})
+##@login_required
+##def rename(request, user, old, label):
+##    if request.method == 'POST':
+##        old_file = Photo.objects.get(file='media/' + request.user.username + '/' + old)
+##        old_name = old_file.file.name
+##        new_name = label + '_' + old_name.split('/')[-1].split('_')[-1]
+##        new_name = 'media/' + user + '/' + new_name
+##        old_file.title = new_name
+##        old_file.file.name = new_name
+##        old_file.save()
+##        try:
+##            os.rename(old_name, new_name)
+##        except:
+##            pass
+##        photos_list = Photo.objects.all()
+##        return render(request, 'labels/labels.html', {'photos': photos_list, 'sel': new_name})
+##    photos_list = Photo.objects.filter(owner=request.user)
+##    return render(request, 'labels/labels.html', {'photos': photos_list})
 
 @login_required
 def crop(request, crop_data):

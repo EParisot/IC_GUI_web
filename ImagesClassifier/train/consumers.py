@@ -42,7 +42,7 @@ class TrainConsumer(WebsocketConsumer):
             data_dict = get_datas(self, False)
 
             #Prepare Model
-            model = Model_file.objects.filter(id=self.model_id)
+            model = Model_file.objects.filter(owner=self.user, id=self.model_id)
             if len(model) > 0:
                 model_url = model[0].file.url[1:]
                 if self.model == None:    

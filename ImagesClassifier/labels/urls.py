@@ -6,7 +6,7 @@ from . import views
 
 urlpatterns = [
     path('', login_required(views.uploadView.as_view()), name='labels'),
-    path('rename/media/<user>/<old>/<label>', views.rename, name='rename'),    
+    #path('rename/media/<user>/<old>/<label>', views.rename, name='rename'),    
     path('delete/media/<user>/<title>', views.delete, name='delete'),
     path('delete_all', views.delete_all, name='delete_all'),
     path('crop/<crop_data>', views.crop, name='crop'),
