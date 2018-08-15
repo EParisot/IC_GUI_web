@@ -1,5 +1,7 @@
 # IC_GUI_web
 
+(this project is a Django/web version of https://github.com/EParisot/ImagesClassifier_GUI (Python/Tkinter standalone app))
+
 Machine Learning Images Classification in Graphical User Interface
 * Take pictures
 * Labelize them
