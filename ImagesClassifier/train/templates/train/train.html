@@ -108,245 +108,248 @@
 </div>
 
 <script>
-function check()
-{
-	var ret = 1;
-	if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML && document.getElementById("m_dim_1").innerHTML != "")
+	function check()
 	{
-		document.getElementById("state_1").src = "{% static 'img/ok.png' %}";
-	}
-	else
-	{
-		document.getElementById("state_1").src = "{% static 'img/nok.png' %}";
-		ret = 0;
-	}
-	if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML && document.getElementById("m_dim_2").innerHTML != "")
-	{
-		document.getElementById("state_2").src = "{% static 'img/ok.png' %}";
-	}
-	else
-	{
-		document.getElementById("state_2").src = "{% static 'img/nok.png' %}";
-		ret = 0;		
-	}
-	if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML && document.getElementById("m_dim_3").innerHTML != "")
-	{
-		document.getElementById("state_3").src = "{% static 'img/ok.png' %}";
-	}
-	else
-	{
-		document.getElementById("state_3").src = "{% static 'img/nok.png' %}";
-		ret = 0;
-	}
-	if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML && document.getElementById("m_out").innerHTML != "")
-	{
-		document.getElementById("state_out").src = "{% static 'img/ok.png' %}";
-	}
-	else
-	{
-		document.getElementById("state_out").src = "{% static 'img/nok.png' %}";
-		ret = 0;
-	}
-	if ("{{ model_infos.4 }}" == 0)
-	{
-		document.getElementById("type").value = "binary_crossentropy"
-	}
-	else if ("{{ model_infos.4 }}" == 1)
-	{
-		document.getElementById("type").value = "categorical_crossentropy"
-	}
-	return ret;
-}
-
-if (window.addEventListener) {
-	window.addEventListener('load', check);
-} else if (window.attachEvent) {
-    window.attachEvent('onload', check);
-} else { 
-    window.onload = check;
-}
-
-function import_model()
-{
-	post_to_url('import');
-	check();
-}
-
-var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-var trainSocket = new WebSocket(
-    ws_scheme + '://' + window.location.host +
-    '/ws/train');
-
-// Listen for connection errors
-trainSocket.onerror = function (e) {      
-    console.log("trainSocket Error "); 
-}
-	
-trainSocket.onclose = function(e) {
-    console.error('Train socket closed unexpectedly');
-};
-
-var logs_acc = []
-var logs_loss = [] 
-var logs_val_acc = []
-var logs_val_loss = []
-var epoch = 0
-
-function toggleDataSeries(e){
-	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-		e.dataSeries.visible = false;
-	}
-	else{
-		e.dataSeries.visible = true;
-	}
-	chart.render();
-}
-	
-CanvasJS.addColorSet("customColorSet",
- [//colorSet Array
- "#ffff4d",
- "#4661EE",
- "#00cc44",
- "#ff4d4d",
-]); 
-		
-var chart = new CanvasJS.Chart("chartContainer",
-{
-	animationEnabled: false,
-	title:{
-		text: "Training History"
-	},
-	colorSet: "customColorSet",
-	axisX: {
-		title: "Epoch",
-		valueFormatString: "#"
-	},
-	axisY: {
-		valueFormatString: "#.#"
-	},
-	legend:{
-		cursor: "pointer",
-		fontSize: 16,
-		itemclick: toggleDataSeries
-	},
-	toolTip:{
-		shared: true
-	},
-	data: [
-	{        
-		name: "Acc",
-		type: "spline",
-		yValueFormatString: "#.#",
-		showInLegend: true,
-		dataPoints: logs_acc
-	},
-	{        
-		name: "Loss",
-		type: "spline",
-		yValueFormatString: "#.#",
-		showInLegend: true,
-		dataPoints: logs_loss
-	},
-	{        
-		name: "Val_Acc",
-		type: "spline",
-		yValueFormatString: "#.#",
-		showInLegend: true,
-		dataPoints: logs_val_acc
-	},
-	{        
-		name: "Val_Loss",
-		type: "spline",
-		yValueFormatString: "#.#",
-		showInLegend: true,
-		dataPoints: logs_val_loss
-	}
-  ]
-});
-chart.render();
-
-trainSocket.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-    var log = data['log'];
-	var output = data['output'];
-	var res = data["res"];
-	var err = data["error"];
-	if (output)
-	{
-		document.querySelector('#train-log').value += output;
-	}
-	if (log)
-	{
-		epoch++;
-		var logs_dict = JSON.parse(log);
-		logs_acc.push({x: epoch, y: logs_dict["acc"]});
-		logs_loss.push({x: epoch, y: logs_dict["loss"]});
-		logs_val_acc.push({x: epoch, y: logs_dict["val_acc"]});
-		logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
-		
-		chart.render();
-	}
-	if (res)
-	{
-		if (window.confirm("Training done, \nSave model ?"))
+		var ret = 1;
+		if (document.getElementById("m_dim_1").innerHTML === document.getElementById("d_dim_1").innerHTML && document.getElementById("m_dim_1").innerHTML != "")
 		{
-			window.location.pathname = res;
+			document.getElementById("state_1").src = "{% static 'img/ok.png' %}";
+		}
+		else
+		{
+			document.getElementById("state_1").src = "{% static 'img/nok.png' %}";
+			ret = 0;
+		}
+		if (document.getElementById("m_dim_2").innerHTML == document.getElementById("d_dim_2").innerHTML && document.getElementById("m_dim_2").innerHTML != "")
+		{
+			document.getElementById("state_2").src = "{% static 'img/ok.png' %}";
+		}
+		else
+		{
+			document.getElementById("state_2").src = "{% static 'img/nok.png' %}";
+			ret = 0;		
+		}
+		if (document.getElementById("m_dim_3").innerHTML == document.getElementById("d_dim_3").innerHTML && document.getElementById("m_dim_3").innerHTML != "")
+		{
+			document.getElementById("state_3").src = "{% static 'img/ok.png' %}";
+		}
+		else
+		{
+			document.getElementById("state_3").src = "{% static 'img/nok.png' %}";
+			ret = 0;
+		}
+		if (document.getElementById("m_out").innerHTML == document.getElementById("d_out").innerHTML && document.getElementById("m_out").innerHTML != "")
+		{
+			document.getElementById("state_out").src = "{% static 'img/ok.png' %}";
+		}
+		else
+		{
+			document.getElementById("state_out").src = "{% static 'img/nok.png' %}";
+			ret = 0;
+		}
+		if ("{{ model_infos.4 }}" == 0)
+		{
+			document.getElementById("type").value = "binary_crossentropy"
+		}
+		else if ("{{ model_infos.4 }}" == 1)
+		{
+			document.getElementById("type").value = "categorical_crossentropy"
+		}
+		return ret;
+	}
+
+	if (window.addEventListener) {
+		window.addEventListener('load', check);
+	} else if (window.attachEvent) {
+		window.attachEvent('onload', check);
+	} else { 
+		window.onload = check;
+	}
+
+	function import_model()
+	{
+		post_to_url('import');
+		if (check() == 0)
+		{
+			window.alert("Something is wrong with the model...");
 		}
 	}
-	if (err)
-	{
-		window.alert(err);
+
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+	var trainSocket = new WebSocket(
+		ws_scheme + '://' + window.location.host +
+		'/ws/train');
+
+	// Listen for connection errors
+	trainSocket.onerror = function (e) {      
+		console.log("trainSocket Error "); 
 	}
-};
+		
+	trainSocket.onclose = function(e) {
+		console.error('Train socket closed unexpectedly');
+	};
 
-var None = null
-function train()
-{
-	if ({{ model_id }} && check() == 1)
-	{
-		trainSocket.send(JSON.stringify({
-				'model_id': {{ model_id }},
-				'model_type': document.getElementById("type").value,
-				'optimizer': document.getElementById("optimizer").value,
-				'batch_size': document.getElementById("batch_size").value,
-				'epochs': document.getElementById("epochs").value,
-				'v_split': document.getElementById("v_split").value,
-				'e_stop': document.getElementById("e_stop").value,
-				'patience': document.getElementById("patience").value,
-			}));
+	var logs_acc = []
+	var logs_loss = [] 
+	var logs_val_acc = []
+	var logs_val_loss = []
+	var epoch = 0
+
+	function toggleDataSeries(e){
+		if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+			e.dataSeries.visible = false;
+		}
+		else{
+			e.dataSeries.visible = true;
+		}
+		chart.render();
 	}
-	else
+		
+	CanvasJS.addColorSet("customColorSet",
+	 [//colorSet Array
+	 "#ffff4d",
+	 "#4661EE",
+	 "#00cc44",
+	 "#ff4d4d",
+	]); 
+			
+	var chart = new CanvasJS.Chart("chartContainer",
 	{
-		window.alert("Import a valid Model before you start Training")
-	}
-}
+		animationEnabled: false,
+		title:{
+			text: "Training History"
+		},
+		colorSet: "customColorSet",
+		axisX: {
+			title: "Epoch",
+			valueFormatString: "#"
+		},
+		axisY: {
+			valueFormatString: "#.#"
+		},
+		legend:{
+			cursor: "pointer",
+			fontSize: 16,
+			itemclick: toggleDataSeries
+		},
+		toolTip:{
+			shared: true
+		},
+		data: [
+		{        
+			name: "Acc",
+			type: "spline",
+			yValueFormatString: "#.#",
+			showInLegend: true,
+			dataPoints: logs_acc
+		},
+		{        
+			name: "Loss",
+			type: "spline",
+			yValueFormatString: "#.#",
+			showInLegend: true,
+			dataPoints: logs_loss
+		},
+		{        
+			name: "Val_Acc",
+			type: "spline",
+			yValueFormatString: "#.#",
+			showInLegend: true,
+			dataPoints: logs_val_acc
+		},
+		{        
+			name: "Val_Loss",
+			type: "spline",
+			yValueFormatString: "#.#",
+			showInLegend: true,
+			dataPoints: logs_val_loss
+		}
+	  ]
+	});
+	chart.render();
 
+	trainSocket.onmessage = function(e) {
+		var data = JSON.parse(e.data);
+		var log = data['log'];
+		var output = data['output'];
+		var res = data["res"];
+		var err = data["error"];
+		if (output)
+		{
+			document.querySelector('#train-log').value += output;
+		}
+		if (log)
+		{
+			epoch++;
+			var logs_dict = JSON.parse(log);
+			logs_acc.push({x: epoch, y: logs_dict["acc"]});
+			logs_loss.push({x: epoch, y: logs_dict["loss"]});
+			logs_val_acc.push({x: epoch, y: logs_dict["val_acc"]});
+			logs_val_loss.push({x: epoch, y: logs_dict["val_loss"]});
+			
+			chart.render();
+		}
+		if (res)
+		{
+			if (window.confirm("Training done, \nSave model ?"))
+			{
+				window.location.pathname = res;
+			}
+		}
+		if (err)
+		{
+			window.alert(err);
+		}
+	};
 
-var w = null;
-function post_to_url(url) 
-{
-	if (w)
+	var None = null
+	function train()
 	{
-		w.close();
+		if ({{ model_id }} && check() == 1)
+		{
+			trainSocket.send(JSON.stringify({
+					'model_id': {{ model_id }},
+					'model_type': document.getElementById("type").value,
+					'optimizer': document.getElementById("optimizer").value,
+					'batch_size': document.getElementById("batch_size").value,
+					'epochs': document.getElementById("epochs").value,
+					'v_split': document.getElementById("v_split").value,
+					'e_stop': document.getElementById("e_stop").value,
+					'patience': document.getElementById("patience").value,
+				}));
+		}
+		else
+		{
+			window.alert("Import a valid Model before you start Training")
+		}
 	}
-	w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
 
-	method = 'POST';
 
-	var form = w.document.createElement('form');
-	form.setAttribute('method', method);
-	form.setAttribute('action', url);
-	form.setAttribute('target', 'Popup_Window');
-	
-	var input = w.document.createElement('input');
-	input.type = 'hidden';
-	input.name = 'csrfmiddlewaretoken'
-	input.value = "{{ csrf_token }}";
-	
-	form.appendChild(input);
-	w.document.body.appendChild(form);
-	form.submit();
-}
+	var w = null;
+	function post_to_url(url) 
+	{
+		if (w)
+		{
+			w.close();
+		}
+		w = window.open(url,'Popup_Window','toolbar=1,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=400,height=300,left = 312,top = 234');
+
+		method = 'POST';
+
+		var form = w.document.createElement('form');
+		form.setAttribute('method', method);
+		form.setAttribute('action', url);
+		form.setAttribute('target', 'Popup_Window');
+		
+		var input = w.document.createElement('input');
+		input.type = 'hidden';
+		input.name = 'csrfmiddlewaretoken'
+		input.value = "{{ csrf_token }}";
+		
+		form.appendChild(input);
+		w.document.body.appendChild(form);
+		form.submit();
+	}
 </script>
 
 {% endblock %}

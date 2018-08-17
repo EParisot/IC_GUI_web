@@ -373,7 +373,7 @@
 				img_list[j].firstChild.setAttribute("src", "/" + new_name);
 				img_list[j].firstChild.setAttribute("alt", new_name);
 				img_list[j].setAttribute("onclick", "show_pic('/" + new_name + "', '" + new_name + "')");
-				document.getElementById("pic_p").innerHTML = "Label : " + label;
+				//document.getElementById("pic_p").innerHTML = "Label : " + label;
 			}
 		}
 		if (count)
@@ -395,10 +395,14 @@
 		{
 			j++;
 		}
+		img_list[j].style.outline="";
+		img_list[j].selected=false;
+		j++;
 		if (j < img_list.length)
 		{
 			img_list[j].style.outline="4px solid red";
 			img_list[j].selected=true;
+			show_pic(img_list[j].firstChild.src, img_list[j].firstChild.alt);
 		}
 	}
 	
