@@ -335,8 +335,9 @@
 		}
 	}
 
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	var labelsSocket = new WebSocket(
-		'ws://' + window.location.host +
+		ws_scheme + '://' + window.location.host +
 		'/ws/labels');
 
 	// Listen for connection errors

@@ -26,16 +26,17 @@ class LabelsConsumer(WebsocketConsumer):
                 new_name = label + '_' + old_name.split('/')[-1].split('_')[-1]
                 new_name = 'media/' + self.user.username + '/' + new_name
                 test_query = Photo.objects.filter(owner=self.user, file=new_name)
-                if len(test_query) == 0:
-                    old_file.title = new_name
-                    old_file[0].file.name = new_name
-                    old_file[0].save()
-                    try:
-                        os.rename(old_name, new_name)
-                    except Exception as e:
-                        err = str(e)
-                else:
-                    err = "This file already exists with the label you provided, \nconsider about removing it..."
+                if new_name != old_name:
+                    if len(test_query) == 0:
+                        old_file.title = new_name
+                        old_file[0].file.name = new_name
+                        old_file[0].save()
+                        try:
+                            os.rename(old_name, new_name)
+                        except Exception as e:
+                            err = str(e)
+                    else:
+                        err = "This file already exists with the label you provided, \nconsider about removing it..."
             elif len(old_file) > 1:
                 err = "This file is duplicated, \nconsider about removing it..."
             self.send(text_data=json.dumps({'old': old, 'new': new_name, 'label': label, 'count': None, 'err': err}))

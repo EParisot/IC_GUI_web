@@ -63,8 +63,9 @@ if ({{ model_id }})
 	document.getElementById("start_but").disabled=false;
 }
 
+var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 var trainSocket = new WebSocket(
-   'ws://' + window.location.host +
+   ws_scheme + '://' + window.location.host +
    '/ws/test');
 	
 // Listen for connection errors
