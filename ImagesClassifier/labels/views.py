@@ -13,7 +13,7 @@ from .models import Photo
 class uploadView(View):
     
     def get(self, request):
-        photos_list = Photo.objects.filter(owner=self.request.user)
+        photos_list = Photo.objects.filter(owner=self.request.user).order_by('file')
         return render(self.request, 'labels/labels.html', {'photos': photos_list})
 
     def post(self, request):
@@ -40,7 +40,7 @@ def crop(request, crop_data):
             img = Image.open(pic.file.name)
             img = img.crop(crop_data)
             img.save(pic.file.name)
-    photos_list = Photo.objects.filter(owner=request.user)
+    photos_list = Photo.objects.filter(owner=request.user).order_by('file')
     return redirect('/labels/', {'photos': photos_list})
 
 @login_required
