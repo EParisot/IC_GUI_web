@@ -229,7 +229,7 @@
 		label.id = "pic_p";
 		var alt_tab = alt.split("/");
 		var i = 0;
-		while (alt_tab[i].search("_") == -1)
+		while (alt_tab[i + 1] && alt_tab[i].search("_") == -1)
 		{
 			i++;
 		}
