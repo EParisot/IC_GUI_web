@@ -2,6 +2,8 @@
 
 (this project is a Django/web version of https://github.com/EParisot/ImagesClassifier_GUI (Python/Tkinter standalone app))
 
+![Alt text](/screenshot_IC_GUI.bmp?raw=true "IC_GUI")
+
 Machine Learning Images Classification in Graphical User Interface
 * Take pictures
 * Labelize them
@@ -13,7 +15,7 @@ Machine Learning Images Classification in Graphical User Interface
 
 ![Alt text](/screenshot_model.bmp?raw=true "Model")
 
-![Alt text](/screenshot_IC_GUI.bmp?raw=true "Training")
+![Alt text](/screenshot_training.bmp?raw=true "Training")
 
 ## Installation:
 
