@@ -24,11 +24,18 @@
 <script src="{% static 'scripts/jquery.Jcrop.min.js' %}"></script>
 <link rel="stylesheet" href="{% static 'scripts/jquery.Jcrop.css' %}" type="text/css" />
 
-
-{# BUTTON TO TRIGGER THE ACTION #}
-<button type="button" class="btn btn-primary js-upload-photos" style="margin: 10px 10px 10px 10px;">
-	<span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
-</button>
+<div id="h_commands">
+	{# BUTTON TO TRIGGER THE ACTION #}
+	<button type="button" class="btn btn-primary js-upload-photos" style="margin: 10px 10px 10px 10px;">
+		<span class="glyphicon glyphicon-cloud-upload"></span> Upload photos
+	</button>
+	<div id="h_commands">
+		<h4>W : </h4>
+		<input id="W_inp" type="text" style="text-align: center;" disabled></input>
+		<h4>H : </h4>
+		<input id="H_inp" type="text" style="text-align: center;" disabled></input>
+	</div>
+</div>
 
 {# DISPLAY THE UPLOAD PROGRESS #}
 <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
@@ -145,6 +152,8 @@
 
 	function crop(c)
 	{
+		document.getElementById("W_inp").value = c.w;
+		document.getElementById("H_inp").value = c.h;
 		delete c.w;
 		delete c.h;
 		cropping = c;
@@ -176,7 +185,7 @@
 			{
 				document.getElementById("zoom_pic").src = "{% static 'img/zoom-out.png' %}";
 				document.getElementById("zoom_pic").alt = "zoom-out";
-				show_pic(document.getElementById("image_elem").src, document.getElementById("image_elem").src);
+				show_pic(document.getElementById("image_elem").src, document.getElementById("image_elem").alt);
 				document.getElementById("crop_pic").src = "{% static 'img/crop-nok.png' %}";
 				document.getElementById("crop_but").disabled = true;
 			}
@@ -229,7 +238,7 @@
 		label.id = "pic_p";
 		var alt_tab = alt.split("/");
 		var i = 0;
-		while (alt_tab[i + 1] && alt_tab[i].search("_") == -1)
+		while (alt_tab[i].search("_") == -1 && i < alt_tab.length)
 		{
 			i++;
 		}
