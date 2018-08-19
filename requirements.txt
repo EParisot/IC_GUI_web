@@ -6,7 +6,7 @@ channels
 asgi_redis
 service_identity
 
-keras
+keras==2.1.5
 pandas
 numpy
 h5py
