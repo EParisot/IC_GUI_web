@@ -2,4 +2,96 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/style_home.css' %}" />
+
+		<!-- Scripts -->
+			<script src="{% static 'scripts/jquery.min.js' %}"></script>
+			<script src="{% static 'scripts/jquery.scrolly.js' %}"></script>
+			<script src="{% static 'scripts/skel.min.js' %}"></script>
+			<script src="{% static 'scripts/utils.js' %}"></script>
+			<script src="{% static 'scripts/main.js' %}"></script>
+
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<img src="{% static 'img/train_big.png' %}" alt="logo"></img><br />
+							<h2>IC_GUI</h2>
+							<p>Images Classifier<br />
+							Graphical User Interface<br />
+							crafted by <a href="http://eparisot.com">Eric PARISOT</a>.</p>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style1 special">
+						<div class="inner">
+							<header class="major">
+								<h2>Made with Love, Coffee and hard Work...</h2>
+								<p>If you like IC_GUI, please visit my <a href="https://github.com/EParisot/IC_GUI_web">Github</a></p>
+
+							</header>
+							<ul class="icons major">
+								<li><span class="icon fa-diamond major style1"><span class="label">Lorem</span></span></li>
+								<li><span class="icon fa-heart-o major style2"><span class="label">Ipsum</span></span></li>
+								<li><span class="icon fa-code major style3"><span class="label">Dolor</span></span></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<section id="three" class="wrapper style2 special">
+						<div class="inner">
+							<header class="major">
+								<h2>Build an Images Classifier,</h2>
+								<p>without any line of code, <br />
+								from any device.</p>
+							</header>
+							<ul class="features">
+								<li class="icon fa-camera">
+									<h3>Take pictures</h3>
+									<p>from your webcam.</p>
+								</li>
+								<li class="icon fa-tags">
+									<h3>Labelize images</h3>
+									<p>with a simple keyboard hint.</p>
+								</li>
+								<li class="icon fa-crop">
+									<h3>Crop images</h3>
+									<p>to fit with your model input.</p>
+								</li>
+								<li class="icon fa-flask">
+									<h3>Design a model architecture</h3>
+									<p>by dragging and dropping layers in your model.</p>
+								</li>
+								<li class="icon fa-graduation-cap">
+									<h3>Train your model</h3>
+									<p>with your own settings.</p>
+								</li>
+								<li class="icon fa-check-square-o">
+									<h3>Test your model</h3>
+									<p>from your webcam images.</p>
+								</li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+							<li><a href="#" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+						</ul>
+					</footer>
+
+			</div>
+
 {% endblock %}

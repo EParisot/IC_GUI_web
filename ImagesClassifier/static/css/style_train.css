@@ -1,3 +1,8 @@
+body
+{
+		background-color: #2e3842;
+}
+	
 #content_div {
 		height: 100%;
 		display: flex;
@@ -9,6 +14,7 @@
 #table{
     border: 1px solid black;
 	border-collapse: collapse;
+	background-color: white;
 }
 
 #settings_div{
@@ -22,6 +28,7 @@
 	height: 40%;
     border: 1px solid black;
 	border-collapse: collapse;
+	background-color: white;
 }
 
 th, td {
@@ -39,7 +46,7 @@ input {
 	min-width: 310px;
 	max-width: 800px;
 	height: 400px;
-	margin: 0 auto
+	margin: 10px 10px 10px 10px;
 }
 
 #h_actions {
@@ -56,6 +63,11 @@ input {
 }
 
 @media only screen and (max-width: 768px) {
+	body
+	{
+			background-color: #2e3842;
+	}
+	
 	#content_div {
 			height: 100%;
 			display: flex;
@@ -64,8 +76,9 @@ input {
 	}
 	
 	#table{
-    border: 1px solid black;
-	border-collapse: collapse;
+		border: 1px solid black;
+		border-collapse: collapse;
+		background-color: white;
 	}
 
 	#settings_div{
@@ -79,6 +92,7 @@ input {
 		height: 40%;
 		border: 1px solid black;
 		border-collapse: collapse;
+		background-color: white;
 	}
 
 	th, td {
