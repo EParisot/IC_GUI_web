@@ -9,7 +9,7 @@ from labels.consumers import LabelsConsumer
 
 application = ProtocolTypeRouter({
 
-    # WebSocket chat handler
+    # WebSocket handler
     "websocket": AuthMiddlewareStack(
         URLRouter([
             url(r"^ws/train$", TrainConsumer),

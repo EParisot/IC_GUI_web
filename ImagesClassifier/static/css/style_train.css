@@ -20,7 +20,6 @@ body
 #settings_div{
 	display: flex;
 	flex-direction: column;
-	justify-content: space-around;
 	align-items: center;
 }
 
@@ -45,7 +44,7 @@ input {
 #chartContainer {
 	min-width: 310px;
 	max-width: 800px;
-	height: 400px;
+	height: 500px;
 	margin: 10px 10px 10px 10px;
 }
 
@@ -84,7 +83,6 @@ input {
 	#settings_div{
 		display: flex;
 		flex-direction: column;
-		justify-content: space-around;
 		align-items: center;
 	}
 

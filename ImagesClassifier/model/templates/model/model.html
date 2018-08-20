@@ -237,23 +237,30 @@ function import_model()
 function export_model()
 {
 	var elem_list = document.getElementById('model_div').children;
-	var dict = {};
-	var i;
-	for (i=0;i<elem_list.length;i++)
+	if (elem_list.length > 0)
 	{
-		var elem = elem_list[i];
-		dict[elem.id] = elem.dataset;
-	}
+		var dict = {};
+		var i;
+		for (i=0;i<elem_list.length;i++)
+		{
+			var elem = elem_list[i];
+			dict[elem.id] = elem.dataset;
+		}
 	
-	if (elem.className == "softmax" || elem.className == "sig")
-	{
-		dict = JSON.stringify(dict);
-		post_to_url('export/' + dict);
+		if (elem.className == "softmax" || elem.className == "sig")
+		{
+			dict = JSON.stringify(dict);
+			post_to_url('export/' + dict);
 
+		}
+		else
+		{
+			window.alert("Model should end with a softmax or sigmoid layer");
+		}
 	}
 	else
 	{
-		window.alert("Model should end with a softmax or sigmoid layer");
+		window.alert("No model to export...");
 	}
 }
 

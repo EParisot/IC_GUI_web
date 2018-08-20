@@ -98,12 +98,14 @@
 			</tr>
 		</table>
 		<button onclick="train()"><img src="{% static 'img/train.png' %}"></img></button>
+		<p>powered by :</p>
+		<img src="{% static 'img/keras.jpeg' %}" alt="Keras Tensorflow"></img>
 	</div>
 </div>
 <div id="content_div">
-	<textarea id="train-log" cols="100" rows="16"></textarea><br/>
+	<textarea id="train-log" cols="100" rows="17" style="margin: 10px 10px 10px 10px;"></textarea><br/>
 
-	<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+	<div id="chartContainer" style="width: 100%; height: 100%;"></div>
 		<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </div>
 
