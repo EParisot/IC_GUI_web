@@ -48,6 +48,12 @@ body
 		border-color: black;
 }
 
+#infos_div {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+}
+
 @media only screen and (max-width: 768px) {
 	body
 	{
@@ -95,5 +101,11 @@ body
 			border-style: solid;
 			border-width: 2px;
 			border-color: black;
+	}
+	
+	#infos_div {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 	}
 }

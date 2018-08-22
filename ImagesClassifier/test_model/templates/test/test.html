@@ -31,7 +31,19 @@
 	
 	<div id="snaps"></div>
 </div>
-
+<div id="infos_div">
+	<h3>To use model, in a Python script, type :</h3>
+	<textarea cols="100" rows="7" style="margin: 10px 10px 10px 10px;" disabled>
+	from keras.models import load_model
+	import numpy as np
+	
+	model = load_model('my_model.h5')
+	prediction = model.predict(<input>)
+	
+	#if categorical :
+	prediction = np.argmax(prediction)</textarea>
+	
+</div>
 <script>
 	var video = document.querySelector("#videoElement");
 		
