@@ -38,7 +38,7 @@
 	import numpy as np
 	
 	model = load_model('my_model.h5')
-	prediction = model.predict(<input>)
+	prediction = model.predict(<input>) #with <input> as a normalised (image/255) np.array
 	
 	#if categorical :
 	prediction = np.argmax(prediction)</textarea>
@@ -67,7 +67,7 @@
 		
 	function import_model()
 	{
-		post_to_url('import');
+		post_to_url('test_import');
 	}
 
 	if ({{ model_id }})

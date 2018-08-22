@@ -26,7 +26,7 @@
 		{# FILE INPUT TO BE USED BY THE PLUG-IN #}
 		<input id="fileupload" type="file" name="file" multiple
 			   style="display: none;"
-			   data-url="{% url 'import' %}"
+			   data-url="{% url 'test_import' %}"
 			   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
 
 		{# DISPLAY THE UPLOADED FILE #}
@@ -79,7 +79,7 @@ function post_to_url_del(url)
 
 	form.appendChild(input);
 	document.body.appendChild(form);
-	form.submit('import');
+	form.submit('test_import');
 }
 </script>
 </body>

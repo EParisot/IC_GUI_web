@@ -40,8 +40,11 @@ class uploadView(View):
             model = form.save(commit=False)
             model.owner = self.request.user
             model.file.name = self.request.user.username + '/' + model.file.name
-            model.save()
-            data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url, 'id': model.id}
+            if ".h5" in model.file.name:
+                model.save()
+                data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url, 'id': model.id}
+            else:
+                data = {'is_valid': False}
         else:
             data = {'is_valid': False}
         return JsonResponse(data)
@@ -53,4 +56,4 @@ def delete_model(request):
     model.delete()
     os.remove(model.file.url[1:])
     models_list = Model_file.objects.filter(owner=request.user)
-    return redirect('/test_model/import', {'models': models_list})
+    return redirect('/test_model/test_import', {'models': models_list})

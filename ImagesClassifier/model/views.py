@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.encoding import smart_str
+from wsgiref.util import FileWrapper
 import os
 import json
 from .models import Model_file
@@ -145,9 +146,9 @@ def save(request, data):
     model, created = Model_file.objects.get_or_create(owner=request.user, file="media/" + request.user.username + '/' + name + ".json")
     model.save()
 
-    response = HttpResponse(content_type='application/force-download')
+    response = HttpResponse(FileWrapper(open("media/"+ request.user.username + '/' + name + ".json", 'rb')), content_type='application/force-download')
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(name + ".json")
-    response['X-Sendfile'] = smart_str("media/" + request.user.username + "/" + name + ".json")
+    #response['X-Sendfile'] = smart_str("media/" + request.user.username + "/" + name + ".json")
     return response
 
 class uploadView(View):
@@ -157,12 +158,16 @@ class uploadView(View):
 
     def post(self, request):
         form = ModelForm(self.request.POST, self.request.FILES)
+        print(form)
         if form.is_valid():
             model = form.save(commit=False)
             model.owner = self.request.user
             model.file.name = self.request.user.username + '/' + model.file.name
-            model.save()
-            data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url}
+            if ".h5" in model.file.name or ".json" in model.file.name:
+                model.save()
+                data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url, 'id': model.id}
+            else:
+                data = {'is_valid': False}
         else:
             data = {'is_valid': False}
         return JsonResponse(data)
@@ -180,4 +185,4 @@ def delete_model(request):
     model.delete()
     os.remove(model.file.url[1:])
     models_list = Model_file.objects.filter(owner=request.user)
-    return redirect('/model/import', {'models': models_list})
+    return redirect('/model/model_import', {'models': models_list})

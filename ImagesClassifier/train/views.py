@@ -98,8 +98,11 @@ class uploadView(View):
             model = form.save(commit=False)
             model.owner = self.request.user
             model.file.name = self.request.user.username + '/' + model.file.name
-            model.save()
-            data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url, 'id': model.id}
+            if ".h5" in model.file.name or ".json" in model.file.name:
+                model.save()
+                data = {'is_valid': True, 'name': model.file.name, 'url': model.file.url, 'id': model.id}
+            else:
+                data = {'is_valid': False}
         else:
             data = {'is_valid': False}
         return JsonResponse(data)
