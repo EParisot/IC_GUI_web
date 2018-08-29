@@ -75,7 +75,7 @@ def export(request, data):
                         dict_data[key]['padding'] = 'valid';
                     else:
                         dict_data[key]['padding'] = 'same';
-                    if (dict_data[key]['kernel_w'] <= 0 or dict_data[key]['kernel_h'] <= 0 or dict_data[key]['stride_x'] <= 0 or dict_data[key]['stride_y'] <= 0):
+                    if (dict_data[key]['pool_w'] <= 0 or dict_data[key]['pool_h'] <= 0 or dict_data[key]['stride_x'] <= 0 or dict_data[key]['stride_y'] <= 0):
                         return HttpResponse('Error: negative or null value in ' + key + ' layer')
                 except(ValueError, TypeError):
                     return HttpResponse('Error: wrong value in '+ key +' layer')
@@ -186,3 +186,6 @@ def delete_model(request):
     os.remove(model.file.url[1:])
     models_list = Model_file.objects.filter(owner=request.user)
     return redirect('/model/model_import', {'models': models_list})
+
+
+

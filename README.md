@@ -26,11 +26,14 @@ https://www.continuum.io/downloads
 or
 https://github.com/42-AI/ai-for-42-students/blob/master/HOW_TOs.md
 
-Install all dependencies listed in requirements.txt (pip install <package_name>)
+Install all dependencies listed in requirements.txt :
+```
+pip install -r requirements.txt
+```
 
 Then :
 ```
-cd ImagesClassifier
+cd ImagesClassifier/ImagesClassifier
 ```
 
 //create / update database
