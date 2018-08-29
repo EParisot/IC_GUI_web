@@ -60,7 +60,7 @@
 <div id="content_div">	
 	<div id="gallery">
 		{# FILE INPUT TO BE USED BY THE PLUG-IN #}
-		<input id="fileupload" type="file" name="file" multiple
+		<input id="fileupload" type="file" accept=".jpeg,.jpg,.png" name="file" multiple
 			   style="display: none;"
 			   data-url="{% url 'labels' %}"
 			   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
@@ -167,16 +167,20 @@
 	{
 		if (document.getElementById("pic_div").innerHTML != "" && document.getElementById("zoom_pic").alt == "zoom-in")
 		{
-			if (window.confirm("Crop all pictures with selected size ?"))
+			if (size_changed == true && document.getElementById("W_inp").value != W && document.getElementById("H_inp").value != H)
 			{
-				if (cropping)
+				if (window.confirm("Resize all pictures with selected size ?"))
 				{
-					post_to_url('crop/' + JSON.stringify(cropping));
+					window.alert("todo")
 				}
-				else
-				{
-					window.alert("No Data to Crop...");
-				}
+			}
+			if (cropping && window.confirm("Crop all pictures with selected borders ?"))
+			{
+				post_to_url('crop/' + JSON.stringify(cropping));
+			}
+			else
+			{
+				window.alert("No Data to Crop/Resize...");
 			}
 		}
 	}
@@ -204,6 +208,7 @@
 		}
 	}
 	
+	var size_changed = false
 	function show_pic(url, alt)
 	{
 		var el = document.getElementById('pic_div');
@@ -231,11 +236,21 @@
 					}
 				);
 			});
+			document.getElementById('W_inp').disabled = false;
+			document.getElementById('H_inp').disabled = false;
+			$('#W_inp').on('input', function() { 
+				size_changed = true;
+			});
+			$('#H_inp').on('input', function() { 
+				size_changed = true;
+			});
 		}
 		else
 		{
 			img.width = W;
 			img.height = H;
+			document.getElementById("W_inp").disabled = true;
+			document.getElementById("H_inp").disabled = true;
 		}
 		
 		var label = document.createElement("h4");

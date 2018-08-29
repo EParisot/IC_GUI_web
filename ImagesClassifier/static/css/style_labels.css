@@ -45,6 +45,13 @@ body
 		background-color: silver;
 }
 
+#pic_p {
+		position: relative;
+		top:0;
+		z-index:42;
+		color: red;
+	}
+
 #gallery {
 		display: flex;
 		flex-wrap: wrap;

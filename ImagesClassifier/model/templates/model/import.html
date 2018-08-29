@@ -24,7 +24,7 @@
 <div id="content_div">	
 	<div id="gallery">
 		{# FILE INPUT TO BE USED BY THE PLUG-IN #}
-		<input id="fileupload" type="file" name="file" multiple
+		<input id="fileupload" type="file" accept=".json" name="file"
 			   style="display: none;"
 			   data-url="{% url 'model_import' %}"
 			   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
