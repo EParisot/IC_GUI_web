@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 Then :
 ```
-cd ImagesClassifier/ImagesClassifier
+cd ImagesClassifier
 ```
 
 //create / update database
