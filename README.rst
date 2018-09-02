@@ -1,8 +1,13 @@
 # IC_GUI_web
 
+.. image:: https://img.shields.io/pypi/v/pip.svg
+   :target: https://pypi.org/project/pip/
+.. image:: https://img.shields.io/badge/Django-2.0-green.svg
+   :target: https://pypi.org/project/Django/
+
 (this project is a Django/web version of https://github.com/EParisot/ImagesClassifier_GUI (Python/Tkinter standalone app))
 
-![Alt text](/screenshot_IC_GUI.bmp?raw=true "IC_GUI")
+.. image:: /screenshot_IC_GUI.bmp
 
 Machine Learning Images Classification in Graphical User Interface
 * Take pictures
@@ -13,19 +18,11 @@ Machine Learning Images Classification in Graphical User Interface
 
 ### Without any line of code, on any device !
 
-![Alt text](/screenshot_model.bmp?raw=true "Model")
+.. image:: /screenshot_model.bmp
 
-![Alt text](/screenshot_training.bmp?raw=true "Training")
+.. image:: /screenshot_training.bmp
 
 ## Installation:
-
-.. image:: https://img.shields.io/pypi/v/pip.svg
-   :target: https://pypi.org/project/pip/
-
-
-.. image:: https://img.shields.io/badge/Django-2.0-green.svg
-   :target: https://pypi.org/project/Django/
-
 
 -----------------------------------------
 
