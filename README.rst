@@ -25,11 +25,10 @@ Without any line of code, on any device !
 .. image:: /screenshot_training.bmp
 
 Installation:
-
 -----------------------------------------
 
 Windows users or 42 students :
-
+------------------------------
 Install Anaconda 3 :
 
 https://www.continuum.io/downloads
@@ -41,9 +40,9 @@ Install all dependencies listed in requirements.txt :
 sudo pip install -r requirements.txt
 ```
 
------------------------------------------
 
 Linux users :
+-------------
 ```
 sudo apt-get install python3-pip
 sudo pip3 install -r requirements.txt
@@ -76,3 +75,4 @@ and go to 127.0.0.1:8000 to test it localy
 To use another IP address and serve IC_GUI on your network, simply add it to ALLOWED_HOSTS in settings.py and run ```python manage.py runserver IP```
 
 Enjoy it !
+----------
