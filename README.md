@@ -51,7 +51,6 @@ cd ImagesClassifier
 
 //create / update database
 ```
-python manage.py makemigrations
 python manage.py migrate
 ```
 
