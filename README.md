@@ -19,6 +19,13 @@ Machine Learning Images Classification in Graphical User Interface
 
 ## Installation:
 
+.. image:: https://img.shields.io/pypi/v/pip.svg
+   :target: https://pypi.org/project/pip/
+
+.. image:: https://img.shields.io/badge/Django-2.0-green.svg
+   :target: https://pypi.org/project/Django/
+
+
 -----------------------------------------
 
 Windows users or 42 students :
