@@ -8,7 +8,6 @@ $(function () {
   $("#fileupload").fileupload({
     dataType: 'json',
 	/* PROGRESSBAR */
-	sequentialUploads: true,  /* 1. SEND THE FILES ONE BY ONE */
     start: function (e) {  /* 2. WHEN THE UPLOADING PROCESS STARTS, SHOW THE MODAL */
       $("#modal-progress").modal("show");
     },

@@ -44,6 +44,22 @@ def crop(request, crop_data):
     return redirect('/labels/', {'photos': photos_list})
 
 @login_required
+def resize(request, resize_data):
+    if request.method == 'POST':
+        resize_data_list = resize_data.split("_")
+        for idx, elem in enumerate(resize_data_list):
+            resize_data_list[idx] = int(elem)
+        photos_list = Photo.objects.filter(owner=request.user)
+        for pic in photos_list:
+            img = Image.open(pic.file.name)
+            
+            img = img.resize((resize_data_list[0], resize_data_list[1]), Image.ANTIALIAS)
+            
+            img.save(pic.file.name)
+    photos_list = Photo.objects.filter(owner=request.user).order_by('file')
+    return redirect('/labels/', {'photos': photos_list})
+
+@login_required
 def delete_all(request):
     if request.method == 'POST':
         photos_list = Photo.objects.filter(owner=request.user)

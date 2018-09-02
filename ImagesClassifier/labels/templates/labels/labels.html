@@ -152,12 +152,9 @@
 		}());
 	}
 	
-	var cropping;
-
+	var cropping = null;
 	function crop(c)
 	{
-		document.getElementById("W_inp").value = c.w;
-		document.getElementById("H_inp").value = c.h;
 		delete c.w;
 		delete c.h;
 		cropping = c;
@@ -167,14 +164,22 @@
 	{
 		if (document.getElementById("pic_div").innerHTML != "" && document.getElementById("zoom_pic").alt == "zoom-in")
 		{
-			if (size_changed == true && document.getElementById("W_inp").value != W && document.getElementById("H_inp").value != H)
+			if (size_changed > 0)
 			{
-				if (window.confirm("Resize all pictures with selected size ?"))
+				if (size_changed == 2)
 				{
-					window.alert("todo")
+					message = "Image is too large, \n";
+				}
+				else
+				{
+					message = "";
+				}
+				if (window.confirm(message + "Resize all pictures with selected size ?"))
+				{
+					post_to_url('resize/' + String(Math.floor(document.getElementById("W_inp").value)) + "_" + String(Math.floor(document.getElementById("H_inp").value)));
 				}
 			}
-			if (cropping && window.confirm("Crop all pictures with selected borders ?"))
+			else if (cropping != null && window.confirm("Crop all pictures with selected borders ?"))
 			{
 				post_to_url('crop/' + JSON.stringify(cropping));
 			}
@@ -208,9 +213,10 @@
 		}
 	}
 	
-	var size_changed = false
+	var size_changed = 0
 	function show_pic(url, alt)
 	{
+		size_changed = 0;
 		var el = document.getElementById('pic_div');
 
 		if (el.childElementCount!=0)
@@ -222,11 +228,21 @@
 		img.src = url;
 		img.alt = url;
 		img.id = "image_elem";
-
+		
+		document.getElementById("W_inp").value = img.width;
+		document.getElementById("H_inp").value = img.height;
+		
 		el.appendChild(img);
 
 		if (document.getElementById("zoom_pic").alt == "zoom-in")
 		{
+			if (img.width > W || img.height > H)
+			{
+				img.width = W;
+				img.height = H;
+				size_changed = 2;
+			}
+			
 			jQuery(function($) {
 				$(img).Jcrop(
 					{
@@ -239,10 +255,10 @@
 			document.getElementById('W_inp').disabled = false;
 			document.getElementById('H_inp').disabled = false;
 			$('#W_inp').on('input', function() { 
-				size_changed = true;
+				size_changed = 1;
 			});
 			$('#H_inp').on('input', function() { 
-				size_changed = true;
+				size_changed = 1;
 			});
 		}
 		else
@@ -253,7 +269,7 @@
 			document.getElementById("H_inp").disabled = true;
 		}
 		
-		var label = document.createElement("h4");
+		var label = document.createElement("h2");
 		label.id = "pic_p";
 		var alt_tab = alt.split("/");
 		var i = 0;

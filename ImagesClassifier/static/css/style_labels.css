@@ -37,6 +37,7 @@ body
 }
 
 #pic_div {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -46,9 +47,10 @@ body
 }
 
 #pic_p {
-		position: relative;
-		top:0;
-		z-index:42;
+		position: absolute;
+		left: 45%;
+		bottom: 0;
+		z-index: 42;
 		color: red;
 	}
 
