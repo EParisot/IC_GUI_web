@@ -58,26 +58,26 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'home/signup.html', {'form': form})
 
-@api_view(['POST'])
-def api_signup(request, format=None):
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
-        form = SignUpForm(json_data)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-            subject = 'Activate Your IC_GUI Account'
-            message = render_to_string('home/account_activation_email.html', {
-                'user': user,
-                'domain': 'IC_GUI Account Validation',
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-                'token': account_activation_token.make_token(user),
-            })
-            user.email_user(subject, message)
-            response = {"Created user": user.username}
-            return Response(response, status=status.HTTP_201_CREATED)
-        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+##@api_view(['POST'])
+##def api_signup(request, format=None):
+##    if request.method == 'POST':
+##        json_data = json.loads(request.body)
+##        form = SignUpForm(json_data)
+##        if form.is_valid():
+##            user = form.save(commit=False)
+##            user.is_active = False
+##            user.save()
+##            subject = 'Activate Your IC_GUI Account'
+##            message = render_to_string('home/account_activation_email.html', {
+##                'user': user,
+##                'domain': 'IC_GUI Account Validation',
+##                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+##                'token': account_activation_token.make_token(user),
+##            })
+##            user.email_user(subject, message)
+##            response = {"Created user": user.username}
+##            return Response(response, status=status.HTTP_201_CREATED)
+##        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def account_activation_sent(request):
     return render(request, 'home/account_activation_sent.html')
@@ -125,7 +125,7 @@ def log_in(request):
     else:
         form = ConnexionForm()
         Next = request.GET.get('next', None)
-    return render(request, 'home/login.html', {'form': form, 'error':error, 'Next': Next})
+    return render(request, 'home/login.html', {'form': form, 'error':error, 'next': Next})
 
 def log_out(request):
     logout(request)

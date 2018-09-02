@@ -11,10 +11,11 @@
 {% if user.is_authenticated %}
 {{ user.username }} Successfully Connected !
 {% else %}
-<form method="post" action="{% url 'login' %}{% if Next %}?next={{ Next }}{% endif %}">
+<form method="post" action="{% url 'login' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <input type='submit' value='LogIn' /> <a href='/reset' > Reset password</a>
+	<input type="hidden" name="next" value="{{ next }}"/>
 </form>
 {% endif %}
 </div>

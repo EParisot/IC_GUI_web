@@ -10,12 +10,12 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
 
     url(r'^signup/$', views.signup, name='signup'),
-    url(r'^api/signup/$', views.api_signup, name='api_signup'),
+#    url(r'^api/signup/$', views.api_signup, name='api_signup'),
     url(r'^account_activation_sent/$', views.account_activation_sent, name='account_activation_sent'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
-    url(r'^login/$', auth_views.LoginView, name='login'),
-    url(r'^logout/$', auth_views.LogoutView, name='logout'),
+    url(r'^login/$', auth_views.LoginView.as_view(template_name='home/login.html'), name='login'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 
     url(r'^reset$', auth_views.PasswordResetView, name='password_reset'),
     url(r'^reset/done/$', auth_views.PasswordResetDoneView, name='password_reset_done'),
@@ -23,9 +23,9 @@ urlpatterns = [
     url(r'^reset/complete/$', auth_views.PasswordResetCompleteView, name='password_reset_complete'),
     ]
 
-urlpatterns += [
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
-]
+#urlpatterns += [
+#    url(r'^api-auth/', include('rest_framework.urls',
+#                               namespace='rest_framework')),
+#]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
