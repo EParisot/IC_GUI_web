@@ -36,41 +36,42 @@ or
 https://github.com/42-AI/ai-for-42-students/blob/master/HOW_TOs.md
 
 Install all dependencies listed in requirements.txt :
-```
+``
 sudo pip install -r requirements.txt
-```
+``
 
 
 Linux users :
 -------------
-```sudo apt-get install python3-pip``` and ```sudo pip3 install -r requirements.txt```
+``sudo apt-get install python3-pip`` and ``sudo pip3 install -r requirements.txt``
 
 
 -----------------------------------------
 
 Then :
-```
+``
 cd ImagesClassifier
-```
+``
 
 - create / update database
-```
+``
 python manage.py migrate
-```
+``
 
 - create superuser
-```
+``
 python manage.py createsuperuser
-```
+``
 
 - run project
-```
+``
 python manage.py runserver
-```
+``
 
 and go to 127.0.0.1:8000 to test it localy
 
-To use another IP address and serve IC_GUI on your network, simply add it to ALLOWED_HOSTS in settings.py and run ```python manage.py runserver IP```
+To use another IP address and serve IC_GUI on your network, simply add it to ALLOWED_HOSTS in settings.py and run with:
+``python manage.py runserver IP``
 
 Enjoy it !
 ----------
