@@ -32,8 +32,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-# Create your views here.
-
 def home(request):
     return render(request, 'home/home.html')
 
@@ -57,27 +55,6 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'home/signup.html', {'form': form})
-
-##@api_view(['POST'])
-##def api_signup(request, format=None):
-##    if request.method == 'POST':
-##        json_data = json.loads(request.body)
-##        form = SignUpForm(json_data)
-##        if form.is_valid():
-##            user = form.save(commit=False)
-##            user.is_active = False
-##            user.save()
-##            subject = 'Activate Your IC_GUI Account'
-##            message = render_to_string('home/account_activation_email.html', {
-##                'user': user,
-##                'domain': 'IC_GUI Account Validation',
-##                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-##                'token': account_activation_token.make_token(user),
-##            })
-##            user.email_user(subject, message)
-##            response = {"Created user": user.username}
-##            return Response(response, status=status.HTTP_201_CREATED)
-##        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def account_activation_sent(request):
     return render(request, 'home/account_activation_sent.html')
@@ -146,55 +123,7 @@ def log_out(request):
 ##
 ##    return render(request, 'home/profile.html', {'user': user, 'current_user': current_user, 'level': level, 'table': table})
 ##
-##@api_view(['GET'])
-##@permission_classes((IsAuthenticated, ))
-##@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-##def api_profile(request, username, format=None):
-##    if request.method == 'GET':
-##        user = User.objects.get(username=username)
-##        current_user = request.user
-##        if user != current_user:
-##            return Response(status=status.HTTP_401_UNAUTHORIZED)
-##        else:
-##            serializer = UsersSerializer(user, many=False)
-##            return Response(serializer.data, status=status.HTTP_200_OK)
 ##
-##@api_view(['GET'])
-##@permission_classes((IsAuthenticated, ))
-##@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-##def api_contrib(request, username, format=None):
-##    if request.method == 'GET':
-##        user = User.objects.get(username=username)
-##        current_user = request.user
-##        if user != current_user:
-##            return Response(status=status.HTTP_401_UNAUTHORIZED)
-##        else:
-##            contrib_list = Contributions.objects.filter(user=user)
-##            serializer = ContribSerializer(contrib_list, many=True)
-##            return Response(serializer.data, status=status.HTTP_200_OK)
-##
-##
-##@login_required
-##def profile_queues(request, username):
-##    user = get_object_or_404(User, username=username)
-##    current_user = request.user
-##    if user != current_user:
-##        return redirect('/login')
-##    return render(request, 'home/profile_queues.html', {'user': user, 'key': settings.GEOPOSITION_GOOGLE_MAPS_API_KEY, 'queues_list': Queues.objects.filter(author=user)})
-##
-##@api_view(['GET'])
-##@permission_classes((IsAuthenticated, ))
-##@authentication_classes((SessionAuthentication, JSONWebTokenAuthentication))
-##def api_profile_queues(request, username, format=None):
-##    if request.method == 'GET':
-##        user = User.objects.get(username=username)
-##        current_user = request.user
-##        if user != current_user:
-##            return Response(status=status.HTTP_401_UNAUTHORIZED)
-##        else: 
-##            queues_list = Queues.objects.filter(author=user)
-##            serializer = QueuesSerializer(queues_list, many=True)
-##            return Response(serializer.data, status=status.HTTP_200_OK)
 ##
 ##@login_required
 ##def edit_profile(request, username):
@@ -211,27 +140,13 @@ def log_out(request):
 ##        form = None
 ##    return render(request, 'home/edit_profile.html', {'user': user, 'form': form,})
 ##
-##@api_view(['POST'])
-##@permission_classes((IsAuthenticated, ))
-##def api_profile_edit(request, username):
-##    if request.method == 'POST':
-##        user = User.objects.get(username=username)
-##        current_user = request.user
-##        if user != current_user:
-##            return Response(status=status.HTTP_401_UNAUTHORIZED)
-##        else:
-##            serializer = UsersSerializer(user, data=request.data)
-##            if serializer.is_valid():
-##                serializer.save()
-##                return Response(serializer.data)
-
-@login_required
-def remove_profile(request, username):
-    user = get_object_or_404(User, username=username)
-    current_user = request.user
-    if user == current_user:
-        user.delete()
-        return redirect('/')
-    else:
-        return redirect('/login/')
+##@login_required
+##def remove_profile(request, username):
+##    user = get_object_or_404(User, username=username)
+##    current_user = request.user
+##    if user == current_user:
+##        user.delete()
+##        return redirect('/')
+##    else:
+##        return redirect('/login/')
 

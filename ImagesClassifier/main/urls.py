@@ -10,7 +10,6 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
 
     url(r'^signup/$', views.signup, name='signup'),
-#    url(r'^api/signup/$', views.api_signup, name='api_signup'),
     url(r'^account_activation_sent/$', views.account_activation_sent, name='account_activation_sent'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
@@ -22,10 +21,5 @@ urlpatterns = [
     url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', auth_views.PasswordResetConfirmView, name='password_reset_confirm'),
     url(r'^reset/complete/$', auth_views.PasswordResetCompleteView, name='password_reset_complete'),
     ]
-
-#urlpatterns += [
-#    url(r'^api-auth/', include('rest_framework.urls',
-#                               namespace='rest_framework')),
-#]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
