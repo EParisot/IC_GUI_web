@@ -36,9 +36,7 @@ or
 https://github.com/42-AI/ai-for-42-students/blob/master/HOW_TOs.md
 
 Install all dependencies listed in requirements.txt :
-``
-sudo pip install -r requirements.txt
-``
+``sudo pip install -r requirements.txt``
 
 
 Linux users :
@@ -49,24 +47,16 @@ Linux users :
 -----------------------------------------
 
 Then :
-``
-cd ImagesClassifier
-``
+``cd ImagesClassifier``
 
 - create / update database
-``
-python manage.py migrate
-``
+``python manage.py migrate``
 
 - create superuser
-``
-python manage.py createsuperuser
-``
+``python manage.py createsuperuser``
 
 - run project
-``
-python manage.py runserver
-``
+``python manage.py runserver``
 
 and go to 127.0.0.1:8000 to test it localy
 
