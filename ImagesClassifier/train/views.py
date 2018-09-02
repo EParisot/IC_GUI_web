@@ -14,11 +14,7 @@ import os
 
 
 def get_datas(request, get_model):
-    #Query images
-    photos = Photo.objects.filter(owner=request.user)
-    photos_list = []
-    labels_list = []
-    labels_nb = ""
+
     photos_dim = []
     model_id = None
     model_infos = []
@@ -51,6 +47,12 @@ def get_datas(request, get_model):
             else:
                 model_infos = []
 
+    #Query images
+    photos = Photo.objects.filter(owner=request.user)
+    photos_list = []
+    labels_list = []
+    labels_nb = ""
+    
     #parse labels
     if len(photos) > 1:
         if '_' in photos[0].file.name:
@@ -65,22 +67,11 @@ def get_datas(request, get_model):
                 labels_list.append(image.file.name.split('/')[-1].split('_')[0])
             else:
                 labels_list = []
-            #open image
-            image = Image.open(image.file.name)
-            image = np.array(image)/255
-            if image.shape[2] == 4:
-                photos_list.append(image[...,:3])
-            elif image.shape[2] == 2:
-                photos_list.append(image[...,:1])
-            elif image.shape[2] == 3 or image.shape[2] == 1:
-                photos_list.append(image)
-        photos_dim = photos_list[0].shape
-        # Shuffle images and labels
-        zipped_list = list(zip(photos_list, labels_list))
-        random.shuffle(zipped_list)
-        photos_list, labels_list = zip(*zipped_list)
+        image = Image.open(photos[0].file.name)
+        image = np.array(image)
+        photos_dim = image.shape
 
-    return {'photos': photos_list, 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
+    return {'photos': len(photos), 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
 
 @login_required
 def index(request):

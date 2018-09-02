@@ -1,9 +1,12 @@
 from channels.generic.websocket import WebsocketConsumer
 from model.models import Model_file
 from train.views import get_datas
+from labels.models import Photo
+from PIL import Image
 import json
 import sys
 import os
+import random
 
 class TrainConsumer(WebsocketConsumer):
     def connect(self):
@@ -18,6 +21,8 @@ class TrainConsumer(WebsocketConsumer):
         pass
 
     def receive(self, text_data):
+        self.send(text_data=json.dumps({'output': "Starting Training\nPlease wait...\n"}))
+
         text_data_json = json.loads(text_data)
         if self.model_id == None:
             self.model_id = text_data_json['model_id']
@@ -69,17 +74,37 @@ class TrainConsumer(WebsocketConsumer):
 
             #Prepare X Y
             if len(self.X) == 0 or len(self.Y) == 0:
-                self.X = data_dict["photos"]
-                self.X = np.array(self.X)
-                self.Y = data_dict["labels_list"]
-                if model_type == 'categorical_crossentropy':
-                    self.Y = pd.get_dummies(self.Y)
-                self.Y = np.array(self.Y)
+                photos = Photo.objects.filter(owner=self.user)
+                photos_list = []
+                if len(photos) > 1:
+                    for image in photos:       
+                        #open image
+                        image = Image.open(image.file.name)
+                        image = np.array(image)/255
+                        if image.shape[2] == 4:
+                            photos_list.append(image[...,:3])
+                        elif image.shape[2] == 2:
+                            photos_list.append(image[...,:1])
+                        elif image.shape[2] == 3 or image.shape[2] == 1:
+                            photos_list.append(image)
+                    
+                    self.X = photos_list
+                    self.Y = data_dict["labels_list"]
+
+                    # Shuffle images and labels
+                    zipped_list = list(zip(self.X, self.Y))
+                    random.shuffle(zipped_list)
+                    self.X, self.Y = zip(*zipped_list)
+                    
+                    self.X = np.array(self.X)
+                    if model_type == 'categorical_crossentropy':
+                        self.Y = pd.get_dummies(self.Y)
+                    self.Y = np.array(self.Y)
 
             #Grab training output
             base_stdout = sys.stdout
             sys.stdout = Std_redirector(self)
-        
+
             self.model.summary()
             
             #Train Loop

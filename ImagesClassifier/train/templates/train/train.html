@@ -46,7 +46,7 @@
 			</tr>
 			<tr>
 				<th>datas : </th>
-				<td> {{ photos|length }} </td>
+				<td> {{ photos }} </td>
 				<td><button id="import_but" onclick="import_model()"><img src="{% static 'img/import.png' %}" alt="import"></img></button></td>
 				<td></td>
 			</tr>
@@ -171,10 +171,6 @@
 	function import_model()
 	{
 		post_to_url('import');
-		if (check() == 0)
-		{
-			window.alert("Something is wrong with the model...");
-		}
 	}
 
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
@@ -322,7 +318,7 @@
 		}
 		else
 		{
-			window.alert("Import a valid Model before you start Training")
+			window.alert("Import Data and a valid Model before you start Training")
 		}
 	}
 
