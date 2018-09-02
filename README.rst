@@ -1,4 +1,5 @@
-# IC_GUI_web
+IC_GUI_web
+==========
 
 .. image:: https://img.shields.io/pypi/v/pip.svg
    :target: https://pypi.org/project/pip/
@@ -16,13 +17,14 @@ Machine Learning Images Classification in Graphical User Interface
 * Train your model 
 * Test your model
 
-### Without any line of code, on any device !
+Without any line of code, on any device !
+-----------------------------------------
 
 .. image:: /screenshot_model.bmp
 
 .. image:: /screenshot_training.bmp
 
-## Installation:
+Installation:
 
 -----------------------------------------
 
@@ -54,17 +56,17 @@ Then :
 cd ImagesClassifier
 ```
 
-//create / update database
+- create / update database
 ```
 python manage.py migrate
 ```
 
-//create superuser
+- create superuser
 ```
 python manage.py createsuperuser
 ```
 
-//run project
+- run project
 ```
 python manage.py runserver
 ```
