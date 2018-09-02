@@ -19,8 +19,11 @@ Machine Learning Images Classification in Graphical User Interface
 
 ## Installation:
 
+-----------------------------------------
+
 Windows users or 42 students :
-Install Anaconda :
+
+Install Anaconda 3 :
 
 https://www.continuum.io/downloads
 or
@@ -28,8 +31,18 @@ https://github.com/42-AI/ai-for-42-students/blob/master/HOW_TOs.md
 
 Install all dependencies listed in requirements.txt :
 ```
-pip install -r requirements.txt
+sudo pip install -r requirements.txt
 ```
+
+-----------------------------------------
+
+Linux users :
+```
+sudo apt-get install python3-pip
+sudo pip3 install -r requirements.txt
+```
+
+-----------------------------------------
 
 Then :
 ```

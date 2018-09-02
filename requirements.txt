@@ -1,8 +1,11 @@
 Django
 
+django_extensions
 djangorestframework
 djangorestframework-jwt
+
 channels
+pathlib
 asgi_redis
 service_identity
 
