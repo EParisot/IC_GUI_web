@@ -43,11 +43,8 @@ sudo pip install -r requirements.txt
 
 Linux users :
 -------------
-```
-sudo apt-get install python3-pip
+```sudo apt-get install python3-pip``` and ```sudo pip3 install -r requirements.txt```
 
-sudo pip3 install -r requirements.txt
-```
 
 -----------------------------------------
 
