@@ -3,13 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-*.jpg
-*.png
+media/
+
 *.h5
 *.json
 *.db
 
-!ImagesClassifier/static/
 
 # C extensions
 *.so
