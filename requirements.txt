@@ -10,6 +10,7 @@ asgi_redis
 service_identity
 
 Pillow
+tensorflow
 keras==2.1.5
 pandas
 numpy
