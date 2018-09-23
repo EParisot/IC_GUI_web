@@ -69,6 +69,10 @@ def get_datas(request, get_model):
                 labels_list = []
         image = Image.open(photos[0].file.name)
         image = np.array(image)
+        if image.shape[2] == 4:
+            image = image[...,:3]
+        elif image.shape[2] == 2:
+            image = image[...,:1]
         photos_dim = image.shape
 
     return {'photos': len(photos), 'photos_dim': photos_dim, 'labels_list': labels_list, 'labels_nb': labels_nb, 'model_id': model_id, 'model_infos': model_infos}
