@@ -64,6 +64,9 @@ def export(request, data):
                 
             elif 'flatten' in key:
                 pass
+
+            elif 'batch_norm' in key:
+                pass
             
             elif 'max_pool' in key:
                 try:
@@ -116,6 +119,8 @@ def export(request, data):
                     model.add(Dense(units=dict_data[key]["neurons"]))
                 elif "flatten" in key:
                     model.add(Flatten())
+                elif "batch_norm" in key:
+                    model.add(BatchNormalization())
                 elif "max_pool" in key:
                     model.add(MaxPooling2D(pool_size=(dict_data[key]["pool_h"], dict_data[key]["pool_w"]), strides=(dict_data[key]["stride_y"], dict_data[key]["stride_x"]), padding=dict_data[key]["padding"]))
                 elif "dropout" in key:
@@ -148,7 +153,6 @@ def save(request, data):
 
     response = HttpResponse(FileWrapper(open("media/"+ request.user.username + '/' + name + ".json", 'rb')), content_type='application/force-download')
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(name + ".json")
-    #response['X-Sendfile'] = smart_str("media/" + request.user.username + "/" + name + ".json")
     return response
 
 class uploadView(View):
