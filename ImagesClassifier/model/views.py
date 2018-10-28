@@ -100,6 +100,7 @@ def export(request, data):
 
         from  keras.models import Sequential
         from keras.layers import Input, Conv2D, Dense, Flatten, Dropout, Activation, MaxPooling2D
+        from keras.layers.normalization import BatchNormalization
         import keras.backend as K
         K.clear_session()
         
