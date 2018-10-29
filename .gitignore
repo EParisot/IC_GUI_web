@@ -5,6 +5,8 @@ __pycache__/
 
 media/
 
+.DS_Store
+
 *.h5
 *.json
 *.db
